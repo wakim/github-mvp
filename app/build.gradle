@@ -3,8 +3,10 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.getkeepsafe.dexcount'
 
+def final appId = "br.com.github.sample";
+
 def final appConfig = [
-        "id": "com.app.id",
+        "id": appId,
 
         "versions": [
                 "kotlin": "$kotlin_version",
@@ -19,25 +21,25 @@ def final appConfig = [
 
         production: [
                 "use_log": "false",
-                "api_url": "\"https://xxx.com\"",
+                "api_url": "\"https://api.github.com\"",
                 "manifest_placeholders": [
-                        "app_id": "com.app.id"
+                        "app_id": appId
                 ]
         ],
 
         staging: [
                 "use_log": "true",
-                "api_url": "\"https://xxx.com\"",
+                "api_url": "\"https://api.github.com\"",
                 "manifest_placeholders": [
-                        "app_id": "com.app.id"
+                        "app_id": appId
                 ]
         ],
 
         development: [
                 "use_log": "true",
-                "api_url": "\"https://xxx.com\"",
+                "api_url": "\"https://api.github.com\"",
                 "manifest_placeholders": [
-                        "app_id": "com.app.id"
+                        "app_id": appId
                 ]
         ]
 ]
@@ -150,6 +152,11 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        main.java.srcDirs += 'src/debug/kotlin'
     }
 }
 
