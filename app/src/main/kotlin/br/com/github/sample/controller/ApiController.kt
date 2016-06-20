@@ -7,7 +7,7 @@ import retrofit2.Response
 class ApiController(app: Application, var apiService: ApiService, preferencesManager: PreferencesManager): BaseController(app, preferencesManager) {
 
     fun searchUser(query: String, page: Int) =
-            apiService.search(query, page)
+            apiService.search("$query in:login", page)
                     .map { body -> body.body().copy(hasMore = hasMore(body)) }
                     .toSingle()
 
