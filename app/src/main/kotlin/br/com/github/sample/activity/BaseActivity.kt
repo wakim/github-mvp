@@ -46,7 +46,7 @@ open class BaseActivity : AppCompatActivity() {
 
     internal var stopped = false
 
-    internal var isDialogShowing: Boolean = false
+    internal var isDialogShowing = false
 
     var coordinatorLayout: CoordinatorLayout? = null
 
@@ -92,7 +92,9 @@ open class BaseActivity : AppCompatActivity() {
         }
 
         if (NavUtils.shouldUpRecreateTask(this, parentIntent)) {
-            TaskStackBuilder.create(this).addNextIntentWithParentStack(parentIntent).startActivities()
+            TaskStackBuilder.create(this)
+                    .addNextIntentWithParentStack(parentIntent)
+                    .startActivities()
 
             supportFinishAfterTransition()
             return true
@@ -207,7 +209,6 @@ open class BaseActivity : AppCompatActivity() {
                     loadingDialog!!.dismiss()
                 }
             } catch (ignored: IllegalArgumentException) { }
-
         }
     }
 

@@ -39,9 +39,9 @@ class MainActivity : BaseActivity() {
                 .apply { layoutResId = R.layout.list_item_user_search }
     }
 
-    var page: Int = 1
+    var page = 1
     var query: String? = null
-    var hasMore: Boolean = false
+    var hasMore = false
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
