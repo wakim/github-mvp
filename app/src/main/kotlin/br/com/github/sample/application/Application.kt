@@ -60,10 +60,12 @@ open class Application : android.app.Application(), Thread.UncaughtExceptionHand
 
         createComponent()
 
-        networkBroadcastReceiver?.let {
+        networkBroadcastReceiver.let {
             isNetworkConnected = it.isNetworkConnected
             isWifiConnected = it.isWifiConnected
         }
+
+        INSTANCE = this
     }
 
     override fun getSystemService(name: String): Any {
@@ -74,7 +76,7 @@ open class Application : android.app.Application(), Thread.UncaughtExceptionHand
         return super.getSystemService(name)
     }
 
-    private fun createComponent() {
+    open protected fun createComponent() {
         appComponent = DaggerAppComponent.builder()
                 .appModule(AppModule(this))
                 .apiModule(ApiModule(BuildConfig.API_URL))
@@ -141,5 +143,6 @@ open class Application : android.app.Application(), Thread.UncaughtExceptionHand
 
     companion object {
         val TAG = BuildConfig.APPLICATION_ID
+        var INSTANCE: Application? = null
     }
 }

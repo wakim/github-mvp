@@ -3,4 +3,6 @@
     <string name="no_connectivity">No connectivity</string>
     <string name="not_logged">Not logged in</string>
     <string name="unknown_error">Unknown Error</string>
+
+    <string name="search_user">Search user</string>
 </resources>

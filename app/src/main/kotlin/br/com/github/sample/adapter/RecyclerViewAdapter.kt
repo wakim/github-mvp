@@ -13,9 +13,11 @@ import br.com.github.sample.extensions.createParcel
 import br.com.github.sample.view.AbstractView
 import java.util.*
 
-abstract class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context: Context) : RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder<V>>() {
+class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context: Context) : RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder<V>>() {
 
     internal var inflater: LayoutInflater
+
+    var layoutResId: Int = 0
 
     var items: ArrayList<M> = ArrayList()
         internal set
@@ -24,7 +26,7 @@ abstract class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context:
         set (loading) {
             val old = this.isLoading
 
-            this.isLoading = loading
+            field = loading
 
             if (old != loading) {
                 val size = items.size
@@ -53,7 +55,7 @@ abstract class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context:
     internal fun onPostCreateViewHolder(holder: RecyclerViewHolder<V>, parent: ViewGroup) { }
 
     @LayoutRes
-    internal abstract fun getLayoutResForViewType(viewType: Int): Int
+    internal fun getLayoutResForViewType(viewType: Int): Int = layoutResId
 
     override fun onBindViewHolder(holder: RecyclerViewHolder<V>, position: Int) {
         if (holder.itemViewType == LOADING_TYPE) {
@@ -65,7 +67,7 @@ abstract class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context:
                     width = RecyclerView.LayoutParams.MATCH_PARENT
                 } else {
                     height = RecyclerView.LayoutParams.WRAP_CONTENT
-                    width = RecyclerView.LayoutParams.WRAP_CONTENT
+                    width = RecyclerView.LayoutParams.MATCH_PARENT
                 }
             }
         } else {

@@ -12,6 +12,7 @@ import android.support.v4.app.NavUtils
 import android.support.v4.app.TaskStackBuilder
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.widget.Toast
 import br.com.github.sample.R
 import br.com.github.sample.application.AppLog
@@ -21,6 +22,7 @@ import br.com.github.sample.dagger.ActivityComponent
 import br.com.github.sample.dagger.Injector
 import br.com.github.sample.dagger.modules.ActivityModule
 import br.com.github.sample.exception.NetworkConnectivityException
+import butterknife.bindView
 import rx.Subscription
 import rx.subscriptions.CompositeSubscription
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
@@ -33,7 +35,10 @@ open class BaseActivity : AppCompatActivity() {
     @Inject
     lateinit var app: Application
 
-    private var compositeSubscription: CompositeSubscription? = CompositeSubscription()
+    val toolbar: Toolbar? by bindView(R.id.toolbar)
+
+    internal var compositeSubscription = CompositeSubscription()
+        private set
 
     lateinit var activityComponent: ActivityComponent
 
@@ -55,6 +60,22 @@ open class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         bindConnectivityPublishSubject()
+    }
+
+    override fun setContentView(layoutResID: Int) {
+        super.setContentView(layoutResID)
+
+        setupToolbar()
+    }
+
+    fun setupToolbar() {
+        toolbar?.let {
+            setSupportActionBar(toolbar)
+
+            it.setNavigationOnClickListener {
+                onSupportNavigateUp()
+            }
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -96,24 +117,20 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     internal fun bindConnectivityPublishSubject() {
-        val subscription = GenericPublishSubject.PUBLISH_SUBJECT.filter { publishItem -> publishItem.type == GenericPublishSubject.CONNECTIVITY_CHANGE_TYPE }.subscribe { publishItem -> onConnectivityChanged(publishItem.`object` as Boolean) }
-
-        addSubscription(subscription)
+        addSubscription {
+            GenericPublishSubject.PUBLISH_SUBJECT.filter { publishItem -> publishItem.type == GenericPublishSubject.CONNECTIVITY_CHANGE_TYPE }.subscribe { publishItem -> onConnectivityChanged(publishItem.`object` as Boolean) }
+        }
     }
 
     internal fun onConnectivityChanged(connected: Boolean) {
     }
 
-    protected fun addSubscription(subscription: Subscription) {
-        getCompositeSubscription().add(subscription)
-    }
+    inline fun addSubscription(fn : () -> Subscription) = getCompositeSubscription().add(fn())
 
     public override fun onDestroy() {
         super.onDestroy()
 
-        if (compositeSubscription != null) {
-            compositeSubscription!!.unsubscribe()
-        }
+        compositeSubscription.unsubscribe()
 
         app.let {
             it.onForegroundActivityDestroy(this)
@@ -167,11 +184,11 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     protected fun getCompositeSubscription(): CompositeSubscription {
-        if (compositeSubscription?.isUnsubscribed ?: true) {
+        if (compositeSubscription.isUnsubscribed) {
             compositeSubscription = CompositeSubscription()
         }
 
-        return compositeSubscription!!
+        return compositeSubscription
     }
 
     fun showLoading() {

@@ -17,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
-class ApiModule(var baseUrl: String) {
+open class ApiModule(var baseUrl: String) {
 
     @Provides
     @Singleton
@@ -26,24 +26,27 @@ class ApiModule(var baseUrl: String) {
 
     @Provides
     @Singleton
-    fun providesOkHttpClient(preferencesManager: PreferencesManager): OkHttpClient {
-        val okBuilder = OkHttpClient.Builder()
-
-        if (AppLog.SHOULD_LOG) {
-            okBuilder.addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-        }
-
-        return okBuilder.build()
-    }
+    fun providesOkHttpClient(preferencesManager: PreferencesManager) = buildOkHttpClient()
 
     @Provides
     @Singleton
-    fun providesApiService(preferencesManager: PreferencesManager, gson: Gson, okHttpClient: OkHttpClient): ApiService {
-        val builder = Retrofit.Builder().baseUrl(baseUrl).client(okHttpClient).addCallAdapterFactory(RxJavaCallAdapterFactory.create()).addConverterFactory(GsonConverterFactory.create(gson))
-        return builder.build().create(ApiService::class.java)
-    }
+    fun providesApiService(preferencesManager: PreferencesManager, gson: Gson, okHttpClient: OkHttpClient) =
+        Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .client(okHttpClient)
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build().create(ApiService::class.java)
 
     @Provides
     @Singleton
     fun providesGson() = GsonBuilder().serializeNulls().create()
+
+    open fun buildOkHttpClient() = OkHttpClient.Builder()
+            .apply {
+                if (AppLog.SHOULD_LOG) {
+                    addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                }
+            }
+            .build()
 }

@@ -171,6 +171,7 @@ android.applicationVariants.all { variant ->
 
 repositories {
     maven { url 'https://jitpack.io' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 }
 
 dependencies {
@@ -185,6 +186,8 @@ dependencies {
 
     compile "com.google.dagger:dagger:$appConfig.versions.dagger"
     kapt "com.google.dagger:dagger-compiler:$appConfig.versions.dagger"
+
+    compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
 
     compile "com.squareup.retrofit2:retrofit:$appConfig.versions.retrofit"
     compile "com.squareup.retrofit2:converter-gson:$appConfig.versions.retrofit"
