@@ -125,7 +125,7 @@ class MainActivity : BaseActivity() {
 
     fun setupSwipeRefresh() {
         swipeRefreshLayout.setOnRefreshListener {
-            page = 0
+            page = 1
 
             query?.let {
                 doSearch(it, true)
