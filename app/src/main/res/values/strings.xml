@@ -5,4 +5,15 @@
     <string name="unknown_error">Unknown Error</string>
 
     <string name="search_user">Search user</string>
+    <string name="public_gists">%1$d Public Gists</string>
+    <string name="public_repos">%1$d Public Repos</string>
+    <string name="hireable">Hireable</string>
+    <string name="location">Location</string>
+    <string name="blog">Blog</string>
+    <string name="company">Company</string>
+    <string name="email">E-mail</string>
+    <string name="bio">Bio</string>
+    <string name="following">Following %1$d</string>
+    <string name="followers">%1$d Followers</string>
+    <string name="public_repositories">Public Repositories</string>
 </resources>

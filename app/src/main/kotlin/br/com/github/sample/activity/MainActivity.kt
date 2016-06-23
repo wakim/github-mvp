@@ -1,5 +1,6 @@
 package br.com.github.sample.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
@@ -36,7 +37,18 @@ class MainActivity : BaseActivity() {
 
     val adapter: RecyclerViewAdapter<UserSearch, UserSearchView> by lazy {
         RecyclerViewAdapter<UserSearch, UserSearchView>(this)
-                .apply { layoutResId = R.layout.list_item_user_search }
+                .apply {
+                    layoutResId = R.layout.list_item_user_search
+                    clickListener = { userSearch ->
+                        startActivity(
+                                Intent(this@MainActivity, DetailActivity::class.java)
+                                        .apply {
+                                            putExtra(PARENT_EXTRA, MainActivity::class.java.name)
+                                            putExtra(DetailActivity.USERNAME_EXTRA, userSearch.login)
+                                        }
+                        )
+                    }
+                }
     }
 
     var page = 1
@@ -50,7 +62,7 @@ class MainActivity : BaseActivity() {
             it.putInt(PAGE_EXTRA, page)
             it.putString(QUERY_EXTRA, query)
             it.putBoolean(HAS_MORE_EXTRA, hasMore)
-            it.putParcelableArrayList(ITEMS_EXTRA, adapter.items)
+            it.putParcelable(ITEMS_EXTRA, adapter.onSaveInstanceState())
         }
     }
 
@@ -70,7 +82,7 @@ class MainActivity : BaseActivity() {
 
     fun restoreState(savedInstanceState: Bundle?) {
         savedInstanceState?.let {
-            adapter.addAll(it.getParcelableArrayList(ITEMS_EXTRA))
+            adapter.onRestoreState(it.getParcelable(ITEMS_EXTRA))
 
             hasMore = it.getBoolean(HAS_MORE_EXTRA)
             query = it.getString(QUERY_EXTRA)
@@ -98,10 +110,9 @@ class MainActivity : BaseActivity() {
         addSubscription {
             apiController.searchUser(query, page)
                     .ofIOToMainThread()
+                    .doOnSuccess { adapter.isLoading = false }
                     .subscribe(
                             { response ->
-                                adapter.isLoading = false
-
                                 if (refresh) {
                                     swipeRefreshLayout.isRefreshing = false
                                     adapter.clear()
@@ -114,10 +125,12 @@ class MainActivity : BaseActivity() {
                                 if (response.hasMore) {
                                     page++
                                 }
+
+                                setSwipeRefreshState()
                             },
                             { error ->
-                                adapter.isLoading = false
                                 snack(error)
+                                setSwipeRefreshState()
                             }
                     )
         }
@@ -131,6 +144,12 @@ class MainActivity : BaseActivity() {
                 doSearch(it, true)
             }
         }
+
+        setSwipeRefreshState()
+    }
+
+    fun setSwipeRefreshState() {
+        swipeRefreshLayout.isEnabled = adapter.count > 0 || (query?.isNotBlank() ?: false)
     }
 
     fun setupRecyclerView() {

@@ -22,7 +22,7 @@ class UserSearchView : LinearLayout, AbstractView<UserSearch> {
     constructor(context: Context?, attrs: AttributeSet?): super(context, attrs)
     constructor(context: Context?): super(context)
 
-    override fun bind(t: UserSearch) {
+    override fun bind(t: UserSearch, position: Int, last: Boolean) {
         userSearch = t
 
         tvPersonName.text = t.login

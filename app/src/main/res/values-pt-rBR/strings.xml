@@ -4,4 +4,15 @@
     <string name="unknown_error">Erro desconhecido</string>
 
     <string name="search_user">Buscar usuário</string>
+    <string name="public_gists">%1$d Gists Públicos</string>
+    <string name="public_repos">%1$d Repositórios Públicos</string>
+    <string name="hireable">Contratável</string>
+    <string name="location">Localização</string>
+    <string name="blog">Blog</string>
+    <string name="company">Empresa</string>
+    <string name="email">E-mail</string>
+    <string name="bio">Bio</string>
+    <string name="following">Seguindo %1$d</string>
+    <string name="followers">%1$d Seguidores</string>
+    <string name="public_repositories">Repositórios Públicos</string>
 </resources>

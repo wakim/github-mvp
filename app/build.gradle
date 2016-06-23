@@ -217,6 +217,8 @@ dependencies {
 
     debugCompile "com.squareup.leakcanary:leakcanary-android:$appConfig.versions.leak_canary"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$appConfig.versions.leak_canary"
+
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha3'
 }
 
 kapt {

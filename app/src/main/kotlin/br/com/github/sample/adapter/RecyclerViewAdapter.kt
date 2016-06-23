@@ -13,7 +13,7 @@ import br.com.github.sample.extensions.createParcel
 import br.com.github.sample.view.AbstractView
 import java.util.*
 
-class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context: Context) : RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder<V>>() {
+class RecyclerViewAdapter<M : Parcelable, V: AbstractView<M>>(context: Context) : RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder<V>>() {
 
     internal var inflater: LayoutInflater
 
@@ -29,7 +29,11 @@ class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context: Context)
             field = loading
 
             if (old != loading) {
-                val size = items.size
+                var size = items.size
+
+                if (header != null) {
+                    size++
+                }
 
                 if (loading)
                     notifyItemInserted(size)
@@ -38,16 +42,37 @@ class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context: Context)
             }
         }
 
+    var clickListener: ((m: M) -> Unit)? = null
+    var header: View? = null
+        set(view) {
+            val old = field
+
+            field = view
+
+            old?.let {
+                notifyItemChanged(0)
+            } ?: notifyItemInserted(0)
+        }
+
     init {
         inflater = LayoutInflater.from(context)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder<V> {
-        if (viewType == LOADING_TYPE) {
-            return RecyclerViewHolder(inflater.inflate(R.layout.list_item_loading, parent, false))
-        } else {
-            return RecyclerViewHolder<V>(inflater.inflate(getLayoutResForViewType(viewType), parent, false)).apply {
-                onPostCreateViewHolder(this, parent)
+        when (viewType) {
+            LOADING_TYPE -> return RecyclerViewHolder(inflater.inflate(R.layout.list_item_loading, parent, false))
+            HEADER_TYPE -> return RecyclerViewHolder(header!!)
+            else -> {
+                return RecyclerViewHolder<V>(inflater.inflate(getLayoutResForViewType(viewType), parent, false)).apply {
+                    clickListener?.apply {
+                        itemView.setOnClickListener { view ->
+                            val m = (view as V).get()
+                            invoke(m)
+                        }
+                    }
+
+                    onPostCreateViewHolder(this, parent)
+                }
             }
         }
     }
@@ -58,24 +83,34 @@ class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context: Context)
     internal fun getLayoutResForViewType(viewType: Int): Int = layoutResId
 
     override fun onBindViewHolder(holder: RecyclerViewHolder<V>, position: Int) {
-        if (holder.itemViewType == LOADING_TYPE) {
-            val lp = holder.itemView.layoutParams as RecyclerView.LayoutParams
+        when (holder.itemViewType) {
+            LOADING_TYPE -> {
+                val lp = holder.itemView.layoutParams as RecyclerView.LayoutParams
 
-            with (lp) {
-                if (items.size == 0) {
-                    height = RecyclerView.LayoutParams.MATCH_PARENT
-                    width = RecyclerView.LayoutParams.MATCH_PARENT
-                } else {
-                    height = RecyclerView.LayoutParams.WRAP_CONTENT
-                    width = RecyclerView.LayoutParams.MATCH_PARENT
+                with (lp) {
+                    if (items.size == 0) {
+                        height = RecyclerView.LayoutParams.MATCH_PARENT
+                        width = RecyclerView.LayoutParams.MATCH_PARENT
+                    } else {
+                        height = RecyclerView.LayoutParams.WRAP_CONTENT
+                        width = RecyclerView.LayoutParams.MATCH_PARENT
+                    }
                 }
             }
-        } else {
-            val m = items[position]
+            HEADER_TYPE -> { }
+            else -> {
+                var pos = position
 
-            bind(holder.get(), m)
+                if (header != null) {
+                    pos--
+                }
 
-            onPostBindViewHolder(holder, m, position)
+                val m = items[pos]
+
+                bind(holder.get(), m, pos)
+
+                onPostBindViewHolder(holder, m, pos)
+            }
         }
     }
 
@@ -85,8 +120,8 @@ class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context: Context)
     val firstItem: M?
         get() = items.firstOrNull()
 
-    internal fun bind(v: V, m: M) {
-        v.bind(m)
+    internal fun bind(v: V, m: M, position: Int) {
+        v.bind(m, position, position == (count - 1))
     }
 
     internal fun onPostBindViewHolder(holder: RecyclerViewHolder<V>, m: M, position: Int) { }
@@ -94,18 +129,20 @@ class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context: Context)
     override fun getItemViewType(position: Int): Int {
         if (isLoading && position == itemCount - 1) {
             return LOADING_TYPE
+        } else if (position == 0 && header != null) {
+            return HEADER_TYPE
         }
 
         return getViewTypeForPosition(position)
     }
 
-    internal fun getViewTypeForPosition(position: Int): Int = ITEM_TYPE
+    internal fun getViewTypeForPosition(position: Int) = ITEM_TYPE
 
     fun update(m: M) {
         val indexOf = items.indexOf(m)
 
         if (indexOf > -1) {
-            notifyItemChanged(indexOf)
+            notifyItemChanged(if (header != null) indexOf + 1 else indexOf)
         }
     }
 
@@ -114,15 +151,20 @@ class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context: Context)
 
     fun clear() {
         val previousSize = items.size
+        val start = if (header != null) 1 else 0
 
         items.clear()
-        notifyItemRangeRemoved(0, previousSize)
+        notifyItemRangeRemoved(start, previousSize)
     }
 
     fun addAll(list: List<M>) {
-        val previous = this.items.size
+        var previous = this.items.size
 
         this.items.addAll(list)
+
+        if (header != null) {
+            previous++
+        }
 
         notifyItemRangeInserted(previous, list.size)
     }
@@ -131,6 +173,10 @@ class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context: Context)
         var count = count
 
         if (isLoading) {
+            count++
+        }
+
+        if (header != null) {
             count++
         }
 
@@ -167,8 +213,8 @@ class RecyclerViewAdapter<M : Parcelable, V : AbstractView<M>>(context: Context)
     }
 
     companion object {
-
         private val LOADING_TYPE = 0
-        private val ITEM_TYPE = 1
+        private val HEADER_TYPE = 1
+        private val ITEM_TYPE = 2
     }
 }

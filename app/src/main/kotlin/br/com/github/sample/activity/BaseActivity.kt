@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.security.keystore.UserNotAuthenticatedException
 import android.support.annotation.StringRes
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
@@ -22,6 +21,7 @@ import br.com.github.sample.dagger.ActivityComponent
 import br.com.github.sample.dagger.Injector
 import br.com.github.sample.dagger.modules.ActivityModule
 import br.com.github.sample.exception.NetworkConnectivityException
+import br.com.github.sample.exception.UserNotAuthenticatedException
 import butterknife.bindView
 import rx.Subscription
 import rx.subscriptions.CompositeSubscription
@@ -72,8 +72,12 @@ open class BaseActivity : AppCompatActivity() {
         toolbar?.let {
             setSupportActionBar(toolbar)
 
-            it.setNavigationOnClickListener {
-                onSupportNavigateUp()
+            if (it.navigationIcon != null) {
+                supportActionBar!!.setDisplayShowHomeEnabled(true)
+
+                it.setNavigationOnClickListener {
+                    onSupportNavigateUp()
+                }
             }
         }
     }

@@ -1,8 +1,8 @@
 package br.com.github.sample.exception
 
-class NetworkConnectivityException: Exception() {
+class UserNotAuthenticatedException: Exception() {
     companion object {
         @SuppressWarnings("ThrowableInstanceNeverThrown")
-        val INSTANCE = NetworkConnectivityException()
+        val INSTANCE = UserNotAuthenticatedException()
     }
 }
