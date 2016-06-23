@@ -93,7 +93,7 @@ class MainActivity : BaseActivity() {
     fun configureSearch() {
         etSearch.setOnEditorActionListener { textView, i, keyEvent ->
             if (i == EditorInfo.IME_ACTION_SEARCH && textView.text.isNotBlank()) {
-                doSearch(textView.text.toString())
+                doSearch(textView.text.toString(), true)
                 hideSoftKeyboard(etSearch)
 
                 return@setOnEditorActionListener true
@@ -103,7 +103,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    fun doSearch(query: String, refresh: Boolean = false) {
+    fun doSearch(query: String, clear: Boolean = false) {
         adapter.isLoading = true
         this.query = query
 
@@ -113,7 +113,7 @@ class MainActivity : BaseActivity() {
                     .doOnSuccess { adapter.isLoading = false }
                     .subscribe(
                             { response ->
-                                if (refresh) {
+                                if (clear) {
                                     swipeRefreshLayout.isRefreshing = false
                                     adapter.clear()
                                 }
