@@ -5,6 +5,7 @@
     <string name="unknown_error">Unknown Error</string>
 
     <string name="search_user">Search user</string>
+    <string name="search_user_or_repository">Search user or repository</string>
     <string name="public_gists">%1$d Public Gists</string>
     <string name="public_repos">%1$d Public Repos</string>
     <string name="hireable">Hireable</string>

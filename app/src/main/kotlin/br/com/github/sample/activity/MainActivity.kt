@@ -1,6 +1,7 @@
 package br.com.github.sample.activity
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
@@ -8,12 +9,13 @@ import android.support.v7.widget.RecyclerView
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import br.com.github.sample.R
-import br.com.github.sample.adapter.RecyclerViewAdapter
+import br.com.github.sample.adapter.SearchAdapter
+import br.com.github.sample.api.model.NextPage
 import br.com.github.sample.controller.ApiController
 import br.com.github.sample.extensions.hideSoftKeyboard
 import br.com.github.sample.extensions.ofIOToMainThread
+import br.com.github.sample.model.Repository
 import br.com.github.sample.model.UserSearch
-import br.com.github.sample.view.UserSearchView
 import butterknife.bindView
 import javax.inject.Inject
 
@@ -21,9 +23,9 @@ class MainActivity : BaseActivity() {
 
     companion object {
         final const val PAGE_EXTRA = "PAGE"
+        final const val HAS_MORE_EXTRA = "HAS_MORE"
         final const val ITEMS_EXTRA = "ITEMS"
         final const val QUERY_EXTRA = "QUERY"
-        final const val HAS_MORE_EXTRA = "HAS_MORE"
 
         final const val MINIMUM_THRESHOLD = 2
     }
@@ -35,34 +37,39 @@ class MainActivity : BaseActivity() {
     val recyclerView: RecyclerView by bindView(R.id.recycler_view)
     val etSearch: EditText by bindView(R.id.et_search)
 
-    val adapter: RecyclerViewAdapter<UserSearch, UserSearchView> by lazy {
-        RecyclerViewAdapter<UserSearch, UserSearchView>(this)
+    val adapter: SearchAdapter by lazy {
+        SearchAdapter(this)
                 .apply {
-                    layoutResId = R.layout.list_item_user_search
-                    clickListener = { userSearch ->
-                        startActivity(
-                                Intent(this@MainActivity, DetailActivity::class.java)
-                                        .apply {
-                                            putExtra(PARENT_EXTRA, MainActivity::class.java.name)
-                                            putExtra(DetailActivity.USERNAME_EXTRA, userSearch.login)
-                                        }
-                        )
+                    clickListener = { item ->
+                        if (item is UserSearch) {
+                            startActivity(
+                                    Intent(this@MainActivity, DetailActivity::class.java)
+                                            .apply {
+                                                putExtra(PARENT_EXTRA, MainActivity::class.java.name)
+                                                putExtra(DetailActivity.USERNAME_EXTRA, item.login)
+                                            }
+                            )
+                        } else if (item is Repository) {
+                            startActivity(Intent(Intent.ACTION_VIEW).apply {
+                                data = Uri.parse(item.htmlUrl)
+                            })
+                        }
                     }
                 }
     }
 
-    var page = 1
+    var nextPage: NextPage? = null
+    var hasMore: Boolean = false
     var query: String? = null
-    var hasMore = false
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
 
         outState?.let {
-            it.putInt(PAGE_EXTRA, page)
-            it.putString(QUERY_EXTRA, query)
-            it.putBoolean(HAS_MORE_EXTRA, hasMore)
+            it.putParcelable(PAGE_EXTRA, nextPage)
             it.putParcelable(ITEMS_EXTRA, adapter.onSaveInstanceState())
+            it.putBoolean(HAS_MORE_EXTRA, hasMore)
+            it.putString(QUERY_EXTRA, query)
         }
     }
 
@@ -84,9 +91,9 @@ class MainActivity : BaseActivity() {
         savedInstanceState?.let {
             adapter.onRestoreState(it.getParcelable(ITEMS_EXTRA))
 
+            nextPage = it.getParcelable(PAGE_EXTRA)
             hasMore = it.getBoolean(HAS_MORE_EXTRA)
             query = it.getString(QUERY_EXTRA)
-            page = it.getInt(PAGE_EXTRA)
         }
     }
 
@@ -107,28 +114,33 @@ class MainActivity : BaseActivity() {
         adapter.isLoading = true
         this.query = query
 
+        if (clear) {
+            nextPage = null
+        }
+
         addSubscription {
-            apiController.searchUser(query, page)
+            apiController.search(query, nextPage)
                     .ofIOToMainThread()
-                    .doOnSuccess { adapter.isLoading = false }
+                    .doOnSuccess {
+                        adapter.isLoading = false
+
+                        if (clear) {
+                            swipeRefreshLayout.isRefreshing = false
+                            adapter.clear()
+                        }
+                    }
                     .subscribe(
                             { response ->
-                                if (clear) {
-                                    swipeRefreshLayout.isRefreshing = false
-                                    adapter.clear()
-                                }
-
                                 adapter.addAll(response.items)
 
-                                hasMore = response.hasMore
-
-                                if (response.hasMore) {
-                                    page++
-                                }
+                                nextPage = response.nextPage
+                                hasMore = response.nextPage.hasMore
 
                                 setSwipeRefreshState()
                             },
                             { error ->
+                                adapter.isLoading = false
+
                                 snack(error)
                                 setSwipeRefreshState()
                             }
@@ -138,8 +150,6 @@ class MainActivity : BaseActivity() {
 
     fun setupSwipeRefresh() {
         swipeRefreshLayout.setOnRefreshListener {
-            page = 1
-
             query?.let {
                 doSearch(it, true)
             }

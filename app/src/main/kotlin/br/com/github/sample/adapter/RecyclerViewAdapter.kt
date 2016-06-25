@@ -13,7 +13,7 @@ import br.com.github.sample.extensions.createParcel
 import br.com.github.sample.view.AbstractView
 import java.util.*
 
-class RecyclerViewAdapter<M : Parcelable, V: AbstractView<M>>(context: Context) : RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder<V>>() {
+open class RecyclerViewAdapter<M : Parcelable, V: AbstractView<M>>(context: Context) : RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder<V>>() {
 
     internal var inflater: LayoutInflater
 
@@ -42,7 +42,7 @@ class RecyclerViewAdapter<M : Parcelable, V: AbstractView<M>>(context: Context) 
             }
         }
 
-    var clickListener: ((m: M) -> Unit)? = null
+    var clickListener: (View.(m: M) -> Unit)? = null
     var header: View? = null
         set(view) {
             val old = field
@@ -67,7 +67,7 @@ class RecyclerViewAdapter<M : Parcelable, V: AbstractView<M>>(context: Context) 
                     clickListener?.apply {
                         itemView.setOnClickListener { view ->
                             val m = (view as V).get()
-                            invoke(m)
+                            invoke(view, m)
                         }
                     }
 
@@ -80,7 +80,7 @@ class RecyclerViewAdapter<M : Parcelable, V: AbstractView<M>>(context: Context) 
     internal fun onPostCreateViewHolder(holder: RecyclerViewHolder<V>, parent: ViewGroup) { }
 
     @LayoutRes
-    internal fun getLayoutResForViewType(viewType: Int): Int = layoutResId
+    internal open fun getLayoutResForViewType(viewType: Int): Int = layoutResId
 
     override fun onBindViewHolder(holder: RecyclerViewHolder<V>, position: Int) {
         when (holder.itemViewType) {
@@ -136,7 +136,7 @@ class RecyclerViewAdapter<M : Parcelable, V: AbstractView<M>>(context: Context) 
         return getViewTypeForPosition(position)
     }
 
-    internal fun getViewTypeForPosition(position: Int) = ITEM_TYPE
+    open internal fun getViewTypeForPosition(position: Int) = ITEM_TYPE
 
     fun update(m: M) {
         val indexOf = items.indexOf(m)

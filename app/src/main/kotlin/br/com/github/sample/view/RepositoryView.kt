@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import br.com.github.sample.R
 import br.com.github.sample.model.Repository
+import butterknife.bindOptionalView
 import butterknife.bindView
 
 class RepositoryView: LinearLayout, AbstractView<Repository> {
@@ -16,7 +17,7 @@ class RepositoryView: LinearLayout, AbstractView<Repository> {
     var repository: Repository? = null
 
     val tvRepositoryName: TextView by bindView(R.id.tv_repository_name)
-    val vDivider: View by bindView(R.id.v_divider)
+    val vDivider: View? by bindOptionalView(R.id.v_divider)
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int): super(context, attrs, defStyleAttr, defStyleRes)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int): super(context, attrs, defStyleAttr)
@@ -25,9 +26,9 @@ class RepositoryView: LinearLayout, AbstractView<Repository> {
 
     override fun bind(t: Repository, position: Int, last: Boolean) {
         repository = t
-        tvRepositoryName.text = t.name
+        tvRepositoryName.text = t.fullName
 
-        vDivider.visibility = if (last) View.GONE else View.VISIBLE
+        vDivider?.visibility = if (last) View.GONE else View.VISIBLE
     }
 
     override fun get(): Repository {

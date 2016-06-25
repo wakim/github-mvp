@@ -4,6 +4,7 @@
     <string name="unknown_error">Erro desconhecido</string>
 
     <string name="search_user">Buscar usuário</string>
+    <string name="search_user_or_repository">Buscar usuário ou repositório</string>
     <string name="public_gists">%1$d Gists Públicos</string>
     <string name="public_repos">%1$d Repositórios Públicos</string>
     <string name="hireable">Contratável</string>

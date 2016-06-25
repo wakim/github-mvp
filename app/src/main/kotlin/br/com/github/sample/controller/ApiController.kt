@@ -1,13 +1,15 @@
 package br.com.github.sample.controller
 
 import br.com.github.sample.api.ApiService
-import br.com.github.sample.api.model.UserRepositoriesResponse
+import br.com.github.sample.api.model.*
 import br.com.github.sample.application.Application
 import br.com.github.sample.extensions.connected
+import br.com.github.sample.model.SearchItem
 import br.com.github.sample.model.User
 import retrofit2.Response
 import rx.Observable
 import rx.Single
+import java.util.*
 
 class ApiController(app: Application, var apiService: ApiService, preferencesManager: PreferencesManager): BaseController(app, preferencesManager) {
 
@@ -19,16 +21,56 @@ class ApiController(app: Application, var apiService: ApiService, preferencesMan
 
                     it.split(",")
                             .asSequence()
-                            .filter { it.contains("rel=\"next\"") }
-                            .count() > 0
+                            .indexOfFirst { it.contains("rel=\"next\"") } >= 0
                 } ?: false
+    }
+
+    fun search(query: String, nextPage: NextPage?): Single<SearchResponse> {
+        var usersObservable = Observable.just<UserSearchResponse>(null)
+        var repositoriesObservable =  Observable.just<RepositorySearchResponse>(null)
+        val searchNextPage = nextPage as? SearchNextPage
+
+        val usersPage = searchNextPage?.nextPageUser ?: 1
+        val repositoriesPage = searchNextPage?.nextPageRepository ?: 1
+
+        if (usersPage > 0) {
+            usersObservable = searchUser(query, usersPage)
+        }
+
+        if (repositoriesPage > 0) {
+            repositoriesObservable = searchRepository(query, repositoriesPage)
+        }
+
+        return usersObservable
+                .zipWith(repositoriesObservable, { users, repositories ->
+                    val list = ArrayList<SearchItem>()
+                    var nextUserPage = usersPage
+                    var nextRepositoriesPage = repositoriesPage
+
+                    users?.let {
+                        list.addAll(it.items)
+                        nextUserPage = if (it.hasMore) nextUserPage + 1 else -1
+                    }
+
+                    repositories?.let {
+                        list.addAll(it.items)
+                        nextRepositoriesPage = if (it.hasMore) nextRepositoriesPage + 1 else -1
+                    }
+
+                    SearchResponse(SearchNextPage(nextUserPage, nextRepositoriesPage), list)
+                })
+                .toSingle()
     }
 
     fun searchUser(query: String, page: Int) =
             apiService.searchUsers("$query in:login", page)
                     .connected()
                     .map { body -> body.body().copy(hasMore = hasMore(body)) }
-                    .toSingle()
+
+    fun searchRepository(query: String, page: Int) =
+            apiService.searchRepositories(query, page)
+                    .connected()
+                    .map { body -> body.body().copy(hasMore = hasMore(body)) }
 
     fun getUser(username: String): Single<Pair<User, UserRepositoriesResponse>>  {
         val userObservable = apiService.getUser(username)

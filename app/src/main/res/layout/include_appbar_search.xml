@@ -27,7 +27,7 @@
                 android:maxLines="1"
                 android:padding="8dp"
                 android:lines="1"
-                android:hint="@string/search_user" />
+                android:hint="@string/search_user_or_repository" />
 
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
