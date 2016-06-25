@@ -25,7 +25,7 @@ class ApiController(app: Application, var apiService: ApiService, preferencesMan
     }
 
     fun searchUser(query: String, page: Int) =
-            apiService.search("$query in:login", page)
+            apiService.searchUsers("$query in:login", page)
                     .connected()
                     .map { body -> body.body().copy(hasMore = hasMore(body)) }
                     .toSingle()

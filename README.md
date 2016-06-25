@@ -1,4 +1,4 @@
-# Search and detail of Users on Github using Kotlin, Dagger and RxAndroid
+# Using Github API using Kotlin, Dagger and RxAndroid
 
 ## Dependencies
 

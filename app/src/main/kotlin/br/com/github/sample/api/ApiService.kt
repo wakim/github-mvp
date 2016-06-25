@@ -1,5 +1,6 @@
 package br.com.github.sample.api
 
+import br.com.github.sample.api.model.RepositorySearchResponse
 import br.com.github.sample.api.model.UserSearchResponse
 import br.com.github.sample.model.Repository
 import br.com.github.sample.model.User
@@ -13,7 +14,10 @@ import rx.Observable
 interface ApiService {
 
     @GET("/search/users")
-    fun search(@Query("q") query: String, @Query("page") page: Int, @Query("per_page") perPage: Int? = 25): Observable<Response<UserSearchResponse>>
+    fun searchUsers(@Query("q") query: String, @Query("page") page: Int, @Query("per_page") perPage: Int? = 25): Observable<Response<UserSearchResponse>>
+
+    @GET("/search/repositories")
+    fun searchRepositories(@Query("q") query: String, @Query("page") page: Int, @Query("per_page") perPage: Int? = 25): Observable<Response<RepositorySearchResponse>>
 
     @GET("/users/{username}")
     fun getUser(@Path("username") username: String): Observable<User>
