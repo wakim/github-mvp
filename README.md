@@ -1,4 +1,4 @@
-# Using Github API using Kotlin, Dagger and RxAndroid
+# Exploring Github API using Kotlin, Dagger and RxAndroid
 
 ## Dependencies
 
