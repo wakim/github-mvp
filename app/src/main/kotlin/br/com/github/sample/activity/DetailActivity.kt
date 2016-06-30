@@ -21,10 +21,10 @@ import javax.inject.Inject
 class DetailActivity: BaseActivity() {
 
     companion object {
-        final const val ITEM_EXTRA = "ITEM"
-        final const val ITEMS_EXTRA = "ITEMS"
-        final const val USERNAME_EXTRA = "USERNAME"
-        final const val HAS_MORE_EXTRA = "HAS_MORE"
+        const val ITEM_EXTRA = "ITEM"
+        const val ITEMS_EXTRA = "ITEMS"
+        const val USERNAME_EXTRA = "USERNAME"
+        const val HAS_MORE_EXTRA = "HAS_MORE"
     }
 
     @Inject

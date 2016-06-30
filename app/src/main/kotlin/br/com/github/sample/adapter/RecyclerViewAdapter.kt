@@ -199,7 +199,7 @@ open class RecyclerViewAdapter<M : Parcelable, V: AbstractView<M>>(context: Cont
 
         override fun describeContents(): Int = 0
 
-        protected constructor(parcelIn: Parcel): this(parcelIn.createTypedArrayList(SavedState.CREATOR) as? ArrayList<M> ?: ArrayList<M>())
+        private constructor(parcelIn: Parcel): this(parcelIn.createTypedArrayList(SavedState.CREATOR) as? ArrayList<M> ?: ArrayList<M>())
 
         companion object {
             @JvmField @Suppress("unused")
@@ -213,8 +213,8 @@ open class RecyclerViewAdapter<M : Parcelable, V: AbstractView<M>>(context: Cont
     }
 
     companion object {
-        private val LOADING_TYPE = 0
-        private val HEADER_TYPE = 1
-        private val ITEM_TYPE = 2
+        private const val LOADING_TYPE = 0
+        private const val HEADER_TYPE = 1
+        private const val ITEM_TYPE = 2
     }
 }

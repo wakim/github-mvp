@@ -83,7 +83,6 @@ android {
     dexOptions {
         javaMaxHeapSize "2g"
         preDexLibraries true
-        incremental true
         dexInProcess = true
     }
 

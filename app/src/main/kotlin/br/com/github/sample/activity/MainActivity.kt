@@ -22,12 +22,12 @@ import javax.inject.Inject
 class MainActivity : BaseActivity() {
 
     companion object {
-        final const val PAGE_EXTRA = "PAGE"
-        final const val HAS_MORE_EXTRA = "HAS_MORE"
-        final const val ITEMS_EXTRA = "ITEMS"
-        final const val QUERY_EXTRA = "QUERY"
+        const val PAGE_EXTRA = "PAGE"
+        const val HAS_MORE_EXTRA = "HAS_MORE"
+        const val ITEMS_EXTRA = "ITEMS"
+        const val QUERY_EXTRA = "QUERY"
 
-        final const val MINIMUM_THRESHOLD = 2
+        const val MINIMUM_THRESHOLD = 2
     }
 
     @Inject

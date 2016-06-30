@@ -10,8 +10,8 @@ import br.com.github.sample.view.AbstractView
 class SearchAdapter(context: Context) : RecyclerViewAdapter<SearchItem, AbstractView<SearchItem>>(context) {
 
     companion object {
-        final const val USER_TYPE = 10
-        final const val REPOSITORY_TYPE = 11
+        const val USER_TYPE = 10
+        const val REPOSITORY_TYPE = 11
     }
 
     override fun getLayoutResForViewType(viewType: Int) =
