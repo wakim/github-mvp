@@ -6,7 +6,7 @@ import br.com.github.sample.dagger.modules.AppModule
 import br.com.github.sample.dagger.modules.DebugApiModule
 import com.facebook.stetho.Stetho
 
-class DebugApp : Application() {
+class DebugApp: Application() {
     override fun onCreate() {
         super.onCreate()
         Stetho.initializeWithDefaults(this)
@@ -17,7 +17,5 @@ class DebugApp : Application() {
                 .appModule(AppModule(this))
                 .apiModule(DebugApiModule(BuildConfig.API_URL))
                 .build()
-
-        appComponent.inject(this)
     }
 }

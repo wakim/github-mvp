@@ -62,12 +62,12 @@ class ApiController(app: Application, var apiService: ApiService, preferencesMan
                 .toSingle()
     }
 
-    fun searchUser(query: String, page: Int) =
+    fun searchUser(query: String, page: Int): Observable<UserSearchResponse> =
             apiService.searchUsers("$query in:login", page)
                     .connected()
                     .map { body -> body.body().copy(hasMore = hasMore(body)) }
 
-    fun searchRepository(query: String, page: Int) =
+    fun searchRepository(query: String, page: Int): Observable<RepositorySearchResponse> =
             apiService.searchRepositories(query, page)
                     .connected()
                     .map { body -> body.body().copy(hasMore = hasMore(body)) }
@@ -83,6 +83,6 @@ class ApiController(app: Application, var apiService: ApiService, preferencesMan
                 .toSingle()
     }
 
-    fun getRepositories(username: String, page: Int) =
+    fun getRepositories(username: String, page: Int): Observable<UserRepositoriesResponse> =
             Observable.create<UserRepositoriesResponse>(RepositoriesOnSubscribe(username, page))
 }

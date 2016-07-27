@@ -59,6 +59,7 @@ open class Application : android.app.Application(), Thread.UncaughtExceptionHand
         setupLeakCanary()
 
         createComponent()
+        appComponent.inject(this)
 
         networkBroadcastReceiver.let {
             isNetworkConnected = it.isNetworkConnected
@@ -81,8 +82,6 @@ open class Application : android.app.Application(), Thread.UncaughtExceptionHand
                 .appModule(AppModule(this))
                 .apiModule(ApiModule(BuildConfig.API_URL))
                 .build()
-
-        appComponent.inject(this)
     }
 
     fun onForegroundActivityResume(activity: BaseActivity) {
