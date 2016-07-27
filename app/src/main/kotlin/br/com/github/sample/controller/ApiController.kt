@@ -11,7 +11,7 @@ import rx.Observable
 import rx.Single
 import java.util.*
 
-class ApiController(app: Application, var apiService: ApiService, preferencesManager: PreferencesManager): BaseController(app, preferencesManager) {
+class ApiController(app: Application, var apiService: ApiService, preferencesManager: Preferences): BaseController(app, preferencesManager), ApiControllerSpec {
 
     companion object {
         // We need to search in headers to discover if request has more pages
@@ -25,7 +25,7 @@ class ApiController(app: Application, var apiService: ApiService, preferencesMan
                 } ?: false
     }
 
-    fun search(query: String, nextPage: NextPage?): Single<SearchResponse> {
+    override fun search(query: String, nextPage: NextPage?): Single<SearchResponse> {
         var usersObservable = Observable.just<UserSearchResponse>(null)
         var repositoriesObservable =  Observable.just<RepositorySearchResponse>(null)
         val searchNextPage = nextPage as? SearchNextPage
@@ -72,7 +72,7 @@ class ApiController(app: Application, var apiService: ApiService, preferencesMan
                     .connected()
                     .map { body -> body.body().copy(hasMore = hasMore(body)) }
 
-    fun getUser(username: String): Single<Pair<User, UserRepositoriesResponse>>  {
+    override fun getUser(username: String): Single<Pair<User, UserRepositoriesResponse>>  {
         val userObservable = apiService.getUser(username)
         val repositoriesObservable = getRepositories(username, 1)
 

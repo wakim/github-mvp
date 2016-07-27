@@ -11,7 +11,7 @@ import android.widget.EditText
 import br.com.github.sample.R
 import br.com.github.sample.adapter.SearchAdapter
 import br.com.github.sample.api.model.NextPage
-import br.com.github.sample.controller.ApiController
+import br.com.github.sample.controller.ApiControllerSpec
 import br.com.github.sample.extensions.hideSoftKeyboard
 import br.com.github.sample.extensions.ofIOToMainThread
 import br.com.github.sample.model.Repository
@@ -31,7 +31,7 @@ class MainActivity : BaseActivity() {
     }
 
     @Inject
-    lateinit var apiController: ApiController
+    lateinit var apiController: ApiControllerSpec
 
     val swipeRefreshLayout: SwipeRefreshLayout by bindView(R.id.swipe_refresh_layout)
     val recyclerView: RecyclerView by bindView(R.id.recycler_view)

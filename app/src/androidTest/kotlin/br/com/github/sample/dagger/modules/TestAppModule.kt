@@ -1,8 +1,12 @@
 package br.com.github.sample.dagger.modules
 
+import android.content.Context
 import android.net.ConnectivityManager
+import br.com.github.sample.api.ApiService
 import br.com.github.sample.application.Application
 import br.com.github.sample.controller.ApiController
+import br.com.github.sample.controller.ApiControllerSpec
+import br.com.github.sample.controller.Preferences
 import br.com.github.sample.controller.PreferencesManager
 import br.com.github.sample.receiver.NetworkBroadcastReceiver
 import br.com.github.sample.util.mock
@@ -19,17 +23,19 @@ class TestAppModule(private val app: Application) {
 
     @Provides
     @Singleton
-    fun providesPreferenceManager() = mock<PreferencesManager>()
+    fun providesConnectivityManager() =
+            app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     @Provides
     @Singleton
-    fun providesApiController() = mock<ApiController>()
+    fun providesBroadcastReceiver(connectivityManager: ConnectivityManager) =
+            NetworkBroadcastReceiver(app, connectivityManager)
 
-    @Provides
     @Singleton
-    fun providesConnectivityManager() = mock<ConnectivityManager>()
+    @Provides
+    fun providesPreferenceManager(): Preferences = mock<Preferences>()
 
-    @Provides
     @Singleton
-    fun providesBroadcastReceiver() = mock<NetworkBroadcastReceiver>()
+    @Provides
+    fun providesApiController(): ApiControllerSpec = mock<ApiControllerSpec>()
 }

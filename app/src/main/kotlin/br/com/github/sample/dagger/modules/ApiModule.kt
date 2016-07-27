@@ -2,6 +2,7 @@ package br.com.github.sample.dagger.modules
 
 import br.com.github.sample.api.ApiService
 import br.com.github.sample.application.AppLog
+import br.com.github.sample.controller.Preferences
 import br.com.github.sample.controller.PreferencesManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -19,11 +20,11 @@ open class ApiModule(var baseUrl: String) {
 
     @Provides
     @Singleton
-    fun providesOkHttpClient(preferencesManager: PreferencesManager) = buildOkHttpClient()
+    fun providesOkHttpClient(preferencesManager: Preferences) = buildOkHttpClient()
 
     @Provides
     @Singleton
-    fun providesApiService(preferencesManager: PreferencesManager, gson: Gson, okHttpClient: OkHttpClient): ApiService =
+    fun providesApiService(preferencesManager: Preferences, gson: Gson, okHttpClient: OkHttpClient): ApiService =
         Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .client(okHttpClient)

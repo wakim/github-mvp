@@ -5,7 +5,7 @@ import br.com.github.sample.exception.NetworkConnectivityException
 import rx.Observable
 import rx.Single
 
-open class BaseController(protected var app: Application?, protected var preferencesManager: PreferencesManager) {
+open class BaseController(protected var app: Application?, protected var preferencesManager: Preferences) {
 
     protected fun <T> checkConnectivity(observable: Observable<T>): Observable<T> {
         return Observable.defer {

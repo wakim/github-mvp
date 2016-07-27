@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import br.com.github.sample.R
 import br.com.github.sample.adapter.RecyclerViewAdapter
-import br.com.github.sample.controller.ApiController
+import br.com.github.sample.controller.ApiControllerSpec
 import br.com.github.sample.extensions.ofIOToMainThread
 import br.com.github.sample.model.Repository
 import br.com.github.sample.model.User
@@ -28,7 +28,7 @@ class DetailActivity: BaseActivity() {
     }
 
     @Inject
-    lateinit var apiController: ApiController
+    lateinit var apiController: ApiControllerSpec
 
     val collapsingToolbarLayout: CollapsingToolbarLayout by bindView(R.id.collapsing_toolbar)
     val recyclerView: RecyclerView by bindView(R.id.recycler_view)

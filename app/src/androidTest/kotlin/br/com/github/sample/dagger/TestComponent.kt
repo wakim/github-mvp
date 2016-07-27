@@ -1,6 +1,7 @@
 package br.com.github.sample.dagger
 
 import br.com.github.sample.dagger.modules.ApiModule
+import br.com.github.sample.dagger.modules.AppModule
 import br.com.github.sample.dagger.modules.TestAppModule
 import br.com.github.sample.tests.MainActivityTest
 import dagger.Component
