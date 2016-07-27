@@ -241,6 +241,9 @@ dependencies {
     androidTestCompile ("com.android.support.test.espresso:espresso-intents:$appConfig.versions.espresso") {
         exclude module: "support-annotations"
     }
+    androidTestCompile("com.android.support.test.espresso:espresso-contrib:$appConfig.versions.espresso") {
+        exclude group: 'com.android.support'
+    }
     androidTestCompile "org.mockito:mockito-core:$appConfig.versions.mockito"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$appConfig.versions.dagger"
 
