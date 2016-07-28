@@ -116,7 +116,7 @@ android {
 
         debug {
 //            signingConfig signingConfigs.release
-            testCoverageEnabled true
+            testCoverageEnabled = true
         }
     }
 
