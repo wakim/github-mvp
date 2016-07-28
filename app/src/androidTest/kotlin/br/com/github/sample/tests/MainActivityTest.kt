@@ -3,10 +3,12 @@ package br.com.github.sample.tests
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.support.annotation.IdRes
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.*
+import android.support.test.espresso.assertion.ViewAssertions
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.intent.Intents
 import android.support.test.espresso.intent.Intents.intended
@@ -106,7 +108,8 @@ class MainActivityTest {
     @Test
     fun shouldAppearHintWhenStart() {
         activityRule.launchActivity(Intent())
-        onView(withId(R.id.et_search)).check(matches(withHint(R.string.search_user_or_repository)))
+        onView(withId(R.id.et_search))
+                .check(matches(withHint(R.string.search_user_or_repository)))
     }
 
     @Test
@@ -258,11 +261,46 @@ class MainActivityTest {
 
         onView(withId(R.id.swipe_refresh_layout)).perform(swipeDown())
 
-        onView(withId(R.id.snackbar_text)).check(matches(allOf(isDisplayed(), withText(R.string.unknown_error))))
+        onView(withId(R.id.snackbar_text))
+                .check(matches(allOf(isDisplayed(), withText(R.string.unknown_error))))
 
         verify(apiController, times(2)).search(query, null)
         verifyNoMoreInteractions(apiController)
     }
+
+    @Test
+    fun shouldSaveAndRestoreInstanceState() {
+        val query = "Teste"
+
+        `when`(apiController.search(query, null))
+                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH)))
+
+        activityRule.launchActivity(Intent())
+
+        onView(withId(R.id.et_search)).apply {
+            perform(clearText(), replaceText(query))
+            perform(pressImeActionButton())
+        }
+
+        onView(withId(R.id.recycler_view))
+                .check(recyclerViewAdapterCount(USERS_SEARCH.size))
+
+        activityRule.activity.rotateScreen()
+
+        onView(withId(R.id.recycler_view))
+                .check(recyclerViewAdapterCount(USERS_SEARCH.size))
+
+        onView(withId(R.id.et_search))
+                .check(ViewAssertions.matches(withText(query)))
+
+        verify(apiController).search(query, null)
+        verifyNoMoreInteractions(apiController)
+    }
+}
+
+fun Activity.rotateScreen() {
+    val orientation = InstrumentationRegistry.getTargetContext().resources.configuration.orientation
+    requestedOrientation = if (orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 }
 
 fun withRecyclerView(@IdRes id: Int) = RecyclerViewMatcher(id)
