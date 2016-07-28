@@ -121,11 +121,15 @@ class MainActivity : BaseActivity() {
         addSubscription {
             apiController.search(query, nextPage)
                     .ofIOToMainThread()
+                    .doOnError {
+                        adapter.isLoading = false
+                        swipeRefreshLayout.isRefreshing = false
+                    }
                     .doOnSuccess {
                         adapter.isLoading = false
+                        swipeRefreshLayout.isRefreshing = false
 
                         if (clear) {
-                            swipeRefreshLayout.isRefreshing = false
                             adapter.clear()
                         }
                     }

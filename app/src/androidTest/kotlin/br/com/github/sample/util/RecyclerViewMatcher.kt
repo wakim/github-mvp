@@ -1,8 +1,10 @@
 package br.com.github.sample.util
 
 import android.content.res.Resources
+import android.support.test.espresso.ViewAssertion
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import junit.framework.AssertionFailedError
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
@@ -54,5 +56,15 @@ class RecyclerViewMatcher(private val recyclerViewId: Int) {
                 }
             }
         }
+    }
+}
+
+fun recyclerViewAdapterCount(expectedCount: Int) = ViewAssertion { view, noViewFoundException ->
+    if (view !is RecyclerView) {
+        throw AssertionFailedError("View must be a RecyclerView")
+    }
+
+    if (view.adapter.itemCount != expectedCount) {
+        throw AssertionFailedError("Expected $expectedCount items in RecyclerView Adapter")
     }
 }
