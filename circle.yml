@@ -11,7 +11,10 @@ general:
 dependencies:
   pre:
     - echo y | android update sdk --no-ui --all --filter "tools,android-24,build-tools-24.0.1,platform-tools,extra-android-m2repository,extra-google-m2repository,extra-google-google_play_services"
-    - cp -r licenses/* $ANDROID_HOME
+    - cp -r ci/android-sdk-license $ANDROID_HOME
+    - cp -r ci/android-sdk-preview-license $ANDROID_HOME
+    - cp -r ci/repositories.cfg /home/ubuntu/.android/
+
   override:
     - ./gradlew dependencies
 

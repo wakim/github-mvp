@@ -17,12 +17,12 @@ def final appConfig = [
                 "paper_parcel": "1.0.0",
                 "support_library": "24.1.1",
                 "leak_canary": "1.4-beta2",
-                "dagger": "2.5",
+                "dagger": "2.6",
                 "stetho": "1.3.1",
                 "retrofit": "2.1.0",
-                "okhttp": "3.3.1",
+                "okhttp": "3.4.1",
 
-                "mockito": "1.+",
+                "mockito": "2.+",
                 "runner": "0.5",
                 "espresso": "2.2.2",
                 "dexmaker": "1.2",
@@ -220,10 +220,10 @@ dependencies {
     kapt "com.github.grandstaish.paperparcel:compiler:$appConfig.versions.paper_parcel"
 
     compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'io.reactivex:rxjava:1.1.6'
+    compile 'io.reactivex:rxjava:1.1.8'
 
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
-    compile 'de.hdodenhof:circleimageview:2.0.0'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
 
     debugCompile "com.facebook.stetho:stetho:$appConfig.versions.stetho"
     debugCompile "com.facebook.stetho:stetho-okhttp3:$appConfig.versions.stetho"
