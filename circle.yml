@@ -16,7 +16,7 @@ dependencies:
 
 test:
   override:
-    - ./gradlew cC
+    - ./gradlew connectedDevelopmentDebugAndroidTest
   pre:
     - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
