@@ -7,6 +7,7 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import android.support.test.espresso.intent.Intents
 import android.support.test.espresso.intent.Intents.intending
 import android.support.test.espresso.intent.matcher.IntentMatchers.isInternal
@@ -16,6 +17,7 @@ import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.rule.ActivityTestRule
 import br.com.github.sample.R
 import br.com.github.sample.activity.DetailActivity
+import br.com.github.sample.adapter.RecyclerViewAdapter
 import br.com.github.sample.api.model.UserRepositoriesResponse
 import br.com.github.sample.application.TestApplication
 import br.com.github.sample.controller.ApiControllerSpec
@@ -187,6 +189,9 @@ class DetailActivityTest {
 
         REPOSITORIES.asSequence()
                 .forEachIndexed { i, repository ->
+                    onView(withId(R.id.recycler_view))
+                            .perform(scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(i + 1))
+
                     onView(withRecyclerView(R.id.recycler_view).atPositionOnView(i + 1, R.id.tv_repository_name))
                             .check(matches(withText(repository.fullName)))
                 }

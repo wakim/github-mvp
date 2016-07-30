@@ -9,7 +9,7 @@ import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.*
 import android.support.test.espresso.assertion.ViewAssertions
 import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.contrib.RecyclerViewActions
+import android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import android.support.test.espresso.intent.Intents
 import android.support.test.espresso.intent.Intents.intended
 import android.support.test.espresso.intent.Intents.intending
@@ -43,7 +43,6 @@ import javax.inject.Inject
 class MainActivityTest {
 
     companion object {
-        val EMPTY_USERS = emptyList<User>()
         val EMPTY_REPOSITORIES = emptyList<Repository>()
 
         val imageUrl = "http://www.nitwaa.in/media//1/profile_pictures/raghavender-mittapalli/raghavender-mittapalli-present.png"
@@ -153,13 +152,23 @@ class MainActivityTest {
 
         USERS_SEARCH.asSequence()
                 .forEachIndexed { i, userSearch ->
+                    onView(withId(R.id.recycler_view))
+                            .perform(scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(i))
+
                     onView(withRecyclerView(R.id.recycler_view).atPositionOnView(i, R.id.tv_person_name))
                             .check(matches(withText(USERS_SEARCH[i].login)))
                 }
 
+        val repositoryStart = USERS_SEARCH.size
+
         REPOSITORIES.asSequence()
                 .forEachIndexed { i, repository ->
-                    onView(withRecyclerView(R.id.recycler_view).atPositionOnView(USERS_SEARCH.size + i, R.id.tv_repository_name))
+                    val repoI = repositoryStart + i
+
+                    onView(withId(R.id.recycler_view))
+                            .perform(scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(repoI))
+
+                    onView(withRecyclerView(R.id.recycler_view).atPositionOnView(repoI, R.id.tv_repository_name))
                             .check(matches(withText(repository.fullName)))
                 }
     }
@@ -296,7 +305,7 @@ class MainActivityTest {
         }
 
         onView(withId(R.id.recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(newList.size - 1))
+                .perform(scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(newList.size - 1))
 
         onView(withId(R.id.recycler_view))
                 .check(recyclerViewAdapterCount(newList.size + list.size))
