@@ -2,12 +2,9 @@ package br.com.github.sample.dagger.modules
 
 import android.content.Context
 import android.net.ConnectivityManager
-import br.com.github.sample.api.ApiService
 import br.com.github.sample.application.Application
-import br.com.github.sample.controller.ApiController
 import br.com.github.sample.controller.ApiControllerSpec
 import br.com.github.sample.controller.Preferences
-import br.com.github.sample.controller.PreferencesManager
 import br.com.github.sample.receiver.NetworkBroadcastReceiver
 import br.com.github.sample.util.mock
 import dagger.Module
@@ -33,9 +30,9 @@ class TestAppModule(private val app: Application) {
 
     @Singleton
     @Provides
-    fun providesPreferenceManager(): Preferences = mock<Preferences>()
+    fun providesPreferenceManager(): Preferences = mock()
 
     @Singleton
     @Provides
-    fun providesApiController(): ApiControllerSpec = mock<ApiControllerSpec>()
+    fun providesApiController(): ApiControllerSpec = mock()
 }
