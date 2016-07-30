@@ -249,8 +249,16 @@ dependencies {
 
     androidTestCompile "com.google.dexmaker:dexmaker:$appConfig.versions.dexmaker"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$appConfig.versions.dexmaker"
+}
 
-//    androidTestCompile "org.robolectric:robolectric:$appConfig.versions.roboeletric"
+task grantAnimationPermission(type: Exec, dependsOn: 'installDevelopmentDebug') {
+    commandLine "./adb_all.sh shell pm grant $appConfig.id android.permission.SET_ANIMATION_SCALE".split(' ')
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.startsWith('connected')) {
+        task.dependsOn grantAnimationPermission
+    }
 }
 
 kapt {

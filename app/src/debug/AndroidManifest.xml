@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="br.com.github.sample">
 
+    <!-- For espresso testing purposes, this is removed in live builds, but not in dev builds -->
+    <uses-permission android:name="android.permission.SET_ANIMATION_SCALE" />
+
     <application
         android:name=".application.DebugApp"
         tools:replace="android:name" />
