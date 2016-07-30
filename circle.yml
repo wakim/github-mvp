@@ -10,7 +10,11 @@ general:
 
 dependencies:
   pre:
-    - echo y | android update sdk --no-ui --all --filter "tools,android-24,build-tools-24.0.1,platform-tools,extra-android-m2repository,extra-google-m2repository,extra-google-google_play_services,extra-android-support"
+    - echo y | android update sdk --no-ui --all --filter "tools,android-24,build-tools-24.0.1,platform-tools,extra-android-m2repository,extra-google-m2repository,extra-google-google_play_services"
+    - cp -r ${HOME}/${CIRCLE_PROJECT_REPONAME}/android-sdk-license $ANDROID_HOME
+    - cp -r ${HOME}/${CIRCLE_PROJECT_REPONAME}/android-sdk-preview-license $ANDROID_HOME
+    - cp -r ${HOME}/${CIRCLE_PROJECT_REPONAME}/repositories.cfg /home/ubuntu/.android/
+    - ls -l ${ANDROID_HOME}/extras/android/m2repository/com/android/support
   override:
     - ./gradlew dependencies
 
