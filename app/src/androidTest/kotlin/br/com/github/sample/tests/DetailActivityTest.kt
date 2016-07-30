@@ -22,10 +22,7 @@ import br.com.github.sample.controller.ApiControllerSpec
 import br.com.github.sample.model.Repository
 import br.com.github.sample.model.User
 import br.com.github.sample.model.UserSearch
-import br.com.github.sample.util.DisableAnimationsRule
-import br.com.github.sample.util.collapsingToolbarTitle
-import br.com.github.sample.util.recyclerViewAdapterCount
-import br.com.github.sample.util.toSingle
+import br.com.github.sample.util.*
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.not
 import org.junit.After
@@ -166,6 +163,47 @@ class DetailActivityTest {
         activityRule.launchActivity(Intent().putExtra(DetailActivity.USERNAME_EXTRA, username))
 
         verifyUser(user)
+
+        onView(withId(R.id.recycler_view))
+                .check(recyclerViewAdapterCount(REPOSITORIES.size + 1))
+
+        verify(apiController).getUser(username)
+
+        verifyNoMoreInteractions(apiController)
+    }
+
+    @Test
+    fun shouldShowRepositoriesInfo() {
+        val username = USERS_SEARCH.first().login
+        val user = USERS.first()
+
+        `when`(apiController.getUser(username))
+                .thenReturn((user to UserRepositoriesResponse(REPOSITORIES, false)).toSingle())
+
+        activityRule.launchActivity(Intent().putExtra(DetailActivity.USERNAME_EXTRA, username))
+
+        REPOSITORIES.asSequence()
+                .forEachIndexed { i, repository ->
+                    onView(withRecyclerView(R.id.recycler_view).atPositionOnView(i + 1, R.id.tv_repository_name))
+                            .check(matches(withText(repository.fullName)))
+                }
+
+        verify(apiController).getUser(username)
+
+        verifyNoMoreInteractions(apiController)
+    }
+
+    @Test
+    fun shouldSaveAndRestoreInstanceState() {
+        val username = USERS_SEARCH.first().login
+        val user = USERS.first()
+
+        `when`(apiController.getUser(username))
+                .thenReturn((user to UserRepositoriesResponse(REPOSITORIES, false)).toSingle())
+
+        activityRule.launchActivity(Intent().putExtra(DetailActivity.USERNAME_EXTRA, username))
+
+        activityRule.activity.rotateScreen()
 
         onView(withId(R.id.recycler_view))
                 .check(recyclerViewAdapterCount(REPOSITORIES.size + 1))
