@@ -1,0 +1,30 @@
+machine:
+  java:
+    version: openjdk8
+
+general:
+  branches:
+    only:
+      - master
+      - develop
+
+dependencies:
+  pre:
+    - echo y | android update sdk --no-ui --all --filter "tools,android-24,build-tools-24.0.0,platform-tools,extra-android-m2repository,extra-google-m2repository,extra-google-google_play_services"
+  override:
+    - ./gradlew dependencies
+
+test:
+  override:
+    - ./gradlew cC
+  pre:
+    - emulator -avd circleci-android22 -no-audio -no-window:
+        background: true
+        parallel: true
+    - circle-android wait-for-boot
+    - fb-adb shell settings put global window_animation_scale 0
+    - fb-adb shell settings put global transition_animation_scale 0
+    - fb-adb shell settings put global animator_duration_scale 0
+    - fb-adb shell input keyevent 82
+  post:
+    - cp -r app/build/reports/androidTests/connected/flavors/DEVELOPMENT $CIRCLE_TEST_REPORTS
