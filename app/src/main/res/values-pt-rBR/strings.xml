@@ -16,4 +16,6 @@
     <string name="following">Seguindo %1$d</string>
     <string name="followers">%1$d Seguidores</string>
     <string name="public_repositories">Repositórios Públicos</string>
+
+    <string name="retry">Tentar novamente</string>
 </resources>

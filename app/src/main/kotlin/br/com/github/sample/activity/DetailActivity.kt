@@ -2,6 +2,7 @@ package br.com.github.sample.activity
 
 import android.os.Bundle
 import android.support.design.widget.CollapsingToolbarLayout
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.RecyclerView
 import android.widget.ImageView
 import android.widget.TextView
@@ -127,15 +128,19 @@ class DetailActivity: BaseActivity() {
                 apiController.getUser(it)
                         .ofIOToMainThread()
                         .doOnSuccess { hideLoading() }
-                        .subscribe({ pair ->
-                            user = pair.first
-                            repositories = pair.second.items
-                            hasMore = pair.second.hasMore
+                        .doOnError { hideLoading() }
+                        .subscribe(
+                                { pair ->
+                                    user = pair.first
+                                    repositories = pair.second.items
+                                    hasMore = pair.second.hasMore
 
-                            adapter.addAll(repositories!!)
+                                    adapter.addAll(repositories!!)
 
-                            setupData()
-                        }, { error -> snack(error) })
+                                    setupData()
+                                },
+                                { error -> snack(error, Snackbar.LENGTH_INDEFINITE).setAction(R.string.retry) { v -> fetchData() } }
+                        )
             }
         }
     }
@@ -154,7 +159,7 @@ class DetailActivity: BaseActivity() {
             tvBio!!.text = bio
 
             tvFollowers!!.text = getString(R.string.followers, followers)
-            tvFollowing!!.text = getString(R.string.following, followers)
+            tvFollowing!!.text = getString(R.string.following, following)
 
             tvPublicRepos!!.text = getString(R.string.public_repos, publicRepos)
             tvPublicGists!!.text = getString(R.string.public_gists, publicGists)

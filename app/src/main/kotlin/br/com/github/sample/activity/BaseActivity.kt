@@ -155,12 +155,10 @@ open class BaseActivity : AppCompatActivity() {
         super.onStop()
     }
 
-    protected fun snack(@StringRes messageResId: Int, @Snackbar.Duration duration: Int) {
+    protected fun snack(@StringRes messageResId: Int, @Snackbar.Duration duration: Int): Snackbar {
         val view = if (coordinatorLayout == null) findViewById(android.R.id.content) else coordinatorLayout
 
-        if (view != null) {
-            Snackbar.make(view, messageResId, duration).show()
-        }
+        return Snackbar.make(view!!, messageResId, duration).apply { show() }
     }
 
     fun toast(error: Throwable) =
@@ -168,9 +166,7 @@ open class BaseActivity : AppCompatActivity() {
                 show()
             }
 
-    fun snack(error: Throwable) {
-        snack(getErrorMessage(error), Snackbar.LENGTH_LONG)
-    }
+    fun snack(error: Throwable, @Snackbar.Duration duration: Int = Snackbar.LENGTH_LONG): Snackbar = snack(getErrorMessage(error), duration)
 
     @StringRes
     protected fun getErrorMessage(error: Throwable): Int {
