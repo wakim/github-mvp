@@ -3,7 +3,11 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.getkeepsafe.dexcount'
 
-def final appId = "br.com.github.sample";
+def final appId = "br.com.github.sample"
+
+def cicleBuild = System.getenv("CI") == "true"
+def final preDexEnabled = "true".equals(System.getProperty("pre-dex", "true")) && !cicleBuild
+def final dexInProcessEnabled = "true".equals(System.getProperty("dex-in-process", "true")) && !cicleBuild
 
 def final appConfig = [
         "id": appId,
@@ -70,7 +74,7 @@ def generateVersionName() {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         applicationId "$appConfig.id"
@@ -90,8 +94,8 @@ android {
 
     dexOptions {
         javaMaxHeapSize "2g"
-        preDexLibraries true
-        dexInProcess = true
+        preDexLibraries preDexEnabled
+        dexInProcess = dexInProcessEnabled
     }
 
 //    signingConfigs {
