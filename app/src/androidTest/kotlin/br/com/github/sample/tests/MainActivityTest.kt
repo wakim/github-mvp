@@ -95,6 +95,7 @@ class MainActivityTest {
         // Bad Smell. Must reset because ApiController is @Singleton
         reset(apiController)
 
+        System.out.println("Intents.init")
         Intents.init()
 
         // By default Espresso Intents does not stub any Intents. Stubbing needs to be setup before
@@ -105,7 +106,9 @@ class MainActivityTest {
 
     @After
     fun tearDown() {
-        Intents.release()
+        try {
+            Intents.release()
+        } catch (ignored: Throwable) { ignored.printStackTrace() }
     }
 
     @Test
