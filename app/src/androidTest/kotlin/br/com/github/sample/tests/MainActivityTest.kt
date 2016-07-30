@@ -10,6 +10,7 @@ import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.*
 import android.support.test.espresso.assertion.ViewAssertions
 import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.contrib.RecyclerViewActions
 import android.support.test.espresso.intent.Intents
 import android.support.test.espresso.intent.Intents.intended
 import android.support.test.espresso.intent.Intents.intending
@@ -19,6 +20,7 @@ import android.support.test.rule.ActivityTestRule
 import br.com.github.sample.R
 import br.com.github.sample.activity.DetailActivity
 import br.com.github.sample.activity.MainActivity
+import br.com.github.sample.adapter.RecyclerViewAdapter
 import br.com.github.sample.api.model.SearchNextPage
 import br.com.github.sample.api.model.SearchResponse
 import br.com.github.sample.api.model.UserRepositoriesResponse
@@ -28,6 +30,7 @@ import br.com.github.sample.model.Repository
 import br.com.github.sample.model.User
 import br.com.github.sample.model.UserSearch
 import br.com.github.sample.util.RecyclerViewMatcher
+import br.com.github.sample.util.concat
 import br.com.github.sample.util.recyclerViewAdapterCount
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
@@ -259,12 +262,47 @@ class MainActivityTest {
         `when`(apiController.search(query, null))
                 .thenReturn(Single.error(NullPointerException()))
 
-        onView(withId(R.id.swipe_refresh_layout)).perform(swipeDown())
+        onView(withId(R.id.swipe_refresh_layout))
+                .perform(swipeDown())
 
         onView(withId(R.id.snackbar_text))
                 .check(matches(allOf(isDisplayed(), withText(R.string.unknown_error))))
 
         verify(apiController, times(2)).search(query, null)
+        verifyNoMoreInteractions(apiController)
+    }
+
+    @Test
+    fun shouldLoadNextPageWhenReachListEnd() {
+        val query = "Teste"
+        val newList = USERS_SEARCH.concat(USERS_SEARCH).concat(USERS_SEARCH).concat(USERS_SEARCH)
+        val nextPage = SearchNextPage(1, 1)
+
+        `when`(apiController.search(query, null))
+                .thenReturn(Single.just(SearchResponse(nextPage, newList)))
+
+        `when`(apiController.search(query, nextPage))
+                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH)))
+
+        activityRule.launchActivity(Intent())
+
+        onView(withId(R.id.et_search)).apply {
+            perform(clearText(), replaceText(query))
+            perform(pressImeActionButton())
+        }
+
+        `when`(apiController.search(query, null))
+                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH)))
+
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(newList.size - 1))
+
+        onView(withId(R.id.recycler_view))
+                .check(recyclerViewAdapterCount(newList.size + USERS_SEARCH.size))
+
+        verify(apiController).search(query, null)
+        verify(apiController).search(query, nextPage)
+
         verifyNoMoreInteractions(apiController)
     }
 
