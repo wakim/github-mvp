@@ -3,7 +3,6 @@ package br.com.github.sample.tests
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.support.annotation.IdRes
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso.onView
@@ -29,9 +28,7 @@ import br.com.github.sample.controller.ApiControllerSpec
 import br.com.github.sample.model.Repository
 import br.com.github.sample.model.User
 import br.com.github.sample.model.UserSearch
-import br.com.github.sample.util.RecyclerViewMatcher
-import br.com.github.sample.util.concat
-import br.com.github.sample.util.recyclerViewAdapterCount
+import br.com.github.sample.util.*
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 import org.junit.After
@@ -51,29 +48,29 @@ class MainActivityTest {
 
         val imageUrl = "http://www.nitwaa.in/media//1/profile_pictures/raghavender-mittapalli/raghavender-mittapalli-present.png"
 
-        val USERS_SEARCH = arrayListOf(
+        val USERS_SEARCH: List<UserSearch> = Collections.unmodifiableList(listOf(
                 UserSearch("sample1", 10L, imageUrl, "https://www.github.com/sample1"),
                 UserSearch("sample2", 11L, imageUrl, "https://www.github.com/sample2"),
                 UserSearch("sample3", 12L, imageUrl, "https://www.github.com/sample3")
-        )
+        ))
 
-        val USERS = arrayListOf(
+        val USERS: List<User> = Collections.unmodifiableList(listOf(
                 User("Sample 1", imageUrl, "Company 1", "https://www.google.com", "Rio de Janeiro",
                         "1@sample.com", false, "User Sample 1", 10, 10, 10, 10, Date(), Date()),
                 User("Sample 2", imageUrl, "Company 2", "https://www.google.com", "Rio de Janeiro",
                         "2@sample.com", false, "User Sample 2", 10, 10, 10, 10, Date(), Date()),
                 User("Sample 3", imageUrl, "Company 3", "https://www.google.com", "Rio de Janeiro",
                         "3@sample.com", false, "User Sample 3", 10, 10, 10, 10, Date(), Date())
-        )
+        ))
 
-        val REPOSITORIES = arrayListOf(
+        val REPOSITORIES: List<Repository> = Collections.unmodifiableList(listOf(
                 Repository("Repository 1", "sample/repository 1", "Sample Repository 1",
                         "https://www.github.com/sample/repository1", 100, 100, 100, 0, "Kotlin"
                 ),
                 Repository("Repository 2", "sample/repository2", "Sample Repository 2",
                         "https://www.github.com/sample/repository2", 100, 100, 100, 0, "Kotlin"
                 )
-        )
+        ))
     }
 
     @Rule @JvmField
@@ -81,6 +78,9 @@ class MainActivityTest {
             MainActivity::class.java,
             true, // initialTouchMode
             false)   // launchActivity. False so we can customize the intent per test method
+
+    @Rule @JvmField
+    val disableAnimationsRule = DisableAnimationsRule()
 
     @Inject
     lateinit var apiController: ApiControllerSpec
@@ -119,7 +119,7 @@ class MainActivityTest {
     fun shouldListUsers() {
         val query = "Teste"
         `when`(apiController.search(query, null))
-                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH)))
+                .thenReturn(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH).toSingle())
 
         activityRule.launchActivity(Intent())
 
@@ -139,7 +139,7 @@ class MainActivityTest {
     fun shouldListRepositoriesAfterUsers() {
         val query = "Teste"
         `when`(apiController.search(query, null))
-                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH + REPOSITORIES)))
+                .thenReturn(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH + REPOSITORIES).toSingle())
 
         activityRule.launchActivity(Intent())
 
@@ -166,10 +166,10 @@ class MainActivityTest {
         val query = "Teste"
 
         `when`(apiController.search(query, null))
-                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH + REPOSITORIES)))
+                .thenReturn(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH + REPOSITORIES).toSingle())
 
         `when`(apiController.getUser(USERS_SEARCH[0].login))
-                .thenReturn(Single.just(USERS[0] to UserRepositoriesResponse(emptyList(), false)))
+                .thenReturn((USERS[0] to UserRepositoriesResponse(emptyList(), false)).toSingle())
 
         activityRule.launchActivity(Intent())
 
@@ -189,7 +189,7 @@ class MainActivityTest {
         val query = "Teste"
 
         `when`(apiController.search(query, null))
-                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), REPOSITORIES)))
+                .thenReturn(SearchResponse(SearchNextPage(-1, -1), REPOSITORIES).toSingle())
 
         activityRule.launchActivity(Intent())
 
@@ -209,7 +209,7 @@ class MainActivityTest {
         val query = "Teste"
 
         `when`(apiController.search(query, null))
-                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), EMPTY_REPOSITORIES)))
+                .thenReturn(SearchResponse(SearchNextPage(-1, -1), EMPTY_REPOSITORIES).toSingle())
 
         activityRule.launchActivity(Intent())
 
@@ -226,7 +226,7 @@ class MainActivityTest {
         val query = "Teste"
 
         `when`(apiController.search(query, null))
-                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH)))
+                .thenReturn(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH).toSingle())
 
         activityRule.launchActivity(Intent())
 
@@ -247,7 +247,7 @@ class MainActivityTest {
         val query = "Teste"
 
         `when`(apiController.search(query, null))
-                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH)))
+                .thenReturn(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH).toSingle())
 
         activityRule.launchActivity(Intent())
 
@@ -275,14 +275,15 @@ class MainActivityTest {
     @Test
     fun shouldLoadNextPageWhenReachListEnd() {
         val query = "Teste"
-        val newList = USERS_SEARCH.concat(USERS_SEARCH).concat(USERS_SEARCH).concat(USERS_SEARCH)
+        val list = ArrayList(USERS_SEARCH)
+        val newList = list.concat(list).concat(list).concat(list)
         val nextPage = SearchNextPage(1, 1)
 
         `when`(apiController.search(query, null))
-                .thenReturn(Single.just(SearchResponse(nextPage, newList)))
+                .thenReturn(SearchResponse(nextPage, newList).toSingle())
 
         `when`(apiController.search(query, nextPage))
-                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH)))
+                .thenReturn(SearchResponse(SearchNextPage(-1, -1), list).toSingle())
 
         activityRule.launchActivity(Intent())
 
@@ -291,14 +292,11 @@ class MainActivityTest {
             perform(pressImeActionButton())
         }
 
-        `when`(apiController.search(query, null))
-                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH)))
-
         onView(withId(R.id.recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(newList.size - 1))
 
         onView(withId(R.id.recycler_view))
-                .check(recyclerViewAdapterCount(newList.size + USERS_SEARCH.size))
+                .check(recyclerViewAdapterCount(newList.size + list.size))
 
         verify(apiController).search(query, null)
         verify(apiController).search(query, nextPage)
@@ -311,7 +309,7 @@ class MainActivityTest {
         val query = "Teste"
 
         `when`(apiController.search(query, null))
-                .thenReturn(Single.just(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH)))
+                .thenReturn(SearchResponse(SearchNextPage(-1, -1), USERS_SEARCH).toSingle())
 
         activityRule.launchActivity(Intent())
 
@@ -334,11 +332,6 @@ class MainActivityTest {
         verify(apiController).search(query, null)
         verifyNoMoreInteractions(apiController)
     }
-}
-
-fun Activity.rotateScreen() {
-    val orientation = InstrumentationRegistry.getTargetContext().resources.configuration.orientation
-    requestedOrientation = if (orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 }
 
 fun withRecyclerView(@IdRes id: Int) = RecyclerViewMatcher(id)

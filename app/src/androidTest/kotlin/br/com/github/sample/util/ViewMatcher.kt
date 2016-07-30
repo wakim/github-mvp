@@ -1,6 +1,7 @@
 package br.com.github.sample.util
 
 import android.content.res.Resources
+import android.support.design.widget.CollapsingToolbarLayout
 import android.support.test.espresso.ViewAssertion
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -39,10 +40,14 @@ class RecyclerViewMatcher(private val recyclerViewId: Int) {
                 this.resources = view.resources
 
                 if (childView == null) {
-                    val recyclerView = view.rootView.findViewById(recyclerViewId) as? RecyclerView
+                    val recyclerView = view.rootView.findViewById(recyclerViewId) as RecyclerView
 
-                    if (recyclerView?.id == recyclerViewId) {
-                        childView = recyclerView!!.findViewHolderForAdapterPosition(position).itemView
+                    if (position >= recyclerView.adapter.itemCount) {
+                        throw IndexOutOfBoundsException("Position greater than RecyclerView adapter itemCount")
+                    }
+
+                    if (recyclerView.id == recyclerViewId) {
+                        childView = recyclerView.findViewHolderForAdapterPosition(position).itemView
                     } else {
                         return false
                     }
@@ -65,6 +70,16 @@ fun recyclerViewAdapterCount(expectedCount: Int) = ViewAssertion { view, noViewF
     }
 
     if (view.adapter.itemCount != expectedCount) {
-        throw AssertionFailedError("Expected $expectedCount items in RecyclerView Adapter")
+        throw AssertionFailedError("Expected $expectedCount items in RecyclerView Adapter found ${view.adapter.itemCount}")
+    }
+}
+
+fun collapsingToolbarTitle(expectedTitle: String) = ViewAssertion { view, noViewFoundException ->
+    if (view !is CollapsingToolbarLayout) {
+        throw AssertionFailedError("View must be a CollapsingToolbarLayout")
+    }
+
+    if (view.title != expectedTitle) {
+        throw AssertionFailedError("Expected $expectedTitle title on CollapsingToolbarLayout found ${view.title}")
     }
 }
