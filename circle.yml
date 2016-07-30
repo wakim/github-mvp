@@ -21,7 +21,7 @@ dependencies:
 
 test:
   override:
-    - ./gradlew connectedDevelopmentDebugAndroidTest
+    - ./gradlew connectedDevelopmentDebugAndroidTest -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms1024m -Xmx1024m" -Dorg.gradle.daemon=false
   pre:
     - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
