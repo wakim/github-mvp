@@ -22,6 +22,7 @@ dependencies:
 test:
   override:
     - ./gradlew connectedDevelopmentDebugAndroidTest -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms1024m -Xmx1024m" -Dorg.gradle.daemon=false
+    
   pre:
     - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
@@ -31,5 +32,6 @@ test:
     - fb-adb shell settings put global transition_animation_scale 0
     - fb-adb shell settings put global animator_duration_scale 0
     - fb-adb shell input keyevent 82
+    
   post:
     - cp -r app/build/reports/androidTests/connected/flavors/DEVELOPMENT $CIRCLE_TEST_REPORTS
