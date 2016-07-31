@@ -29,7 +29,7 @@ class UserSearchView : LinearLayout, AbstractView<UserSearch> {
 
         tvPersonName.text = t.login
 
-        if (t.avatarUrl.isNotBlank()) {
+        if (!t.avatarUrl.isNullOrBlank()) {
             Glide.with(context)
                     .load(t.avatarUrl)
                     .into(ivAvatar)

@@ -47,11 +47,11 @@ class DetailActivityTest {
         ))
 
         val USERS: List<User> = Collections.unmodifiableList(listOf(
-                User("Sample 1", imageUrl, "Company 1", "https://www.google.com", "Rio de Janeiro",
+                User("Sample 1", "sample1", imageUrl, "Company 1", "https://www.google.com", "Rio de Janeiro",
                         "1@sample.com", false, "User Sample 1", 10, 10, 10, 10, Date(), Date()),
-                User("Sample 2", imageUrl, "Company 2", "https://www.google.com", "Rio de Janeiro",
+                User("Sample 2", "sample2", imageUrl, "Company 2", "https://www.google.com", "Rio de Janeiro",
                         "2@sample.com", false, "User Sample 2", 10, 10, 10, 10, Date(), Date()),
-                User("Sample 3", imageUrl, "Company 3", "https://www.google.com", "Rio de Janeiro",
+                User("Sample 3", "sample3", imageUrl, "Company 3", "https://www.google.com", "Rio de Janeiro",
                         "3@sample.com", false, "User Sample 3", 10, 10, 10, 10, Date(), Date())
         ))
 
@@ -225,7 +225,7 @@ class DetailActivityTest {
         val res = activityRule.activity.resources
 
         onView(withId(R.id.collapsing_toolbar))
-                .check(collapsingToolbarTitle(user.name))
+                .check(collapsingToolbarTitle(user.name ?: user.login))
 
         onView(withId(R.id.tv_followers))
                 .check(matches(withText(res.getString(R.string.followers, user.followers))))

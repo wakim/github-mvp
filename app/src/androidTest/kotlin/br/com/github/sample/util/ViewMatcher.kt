@@ -74,7 +74,7 @@ fun recyclerViewAdapterCount(expectedCount: Int) = ViewAssertion { view, noViewF
     }
 }
 
-fun collapsingToolbarTitle(expectedTitle: String) = ViewAssertion { view, noViewFoundException ->
+fun collapsingToolbarTitle(expectedTitle: String?) = ViewAssertion { view, noViewFoundException ->
     if (view !is CollapsingToolbarLayout) {
         throw AssertionFailedError("View must be a CollapsingToolbarLayout")
     }

@@ -149,7 +149,7 @@ class DetailActivity: BaseActivity() {
         with (user!!) {
             val context = this@DetailActivity
 
-            collapsingToolbarLayout.title = name
+            collapsingToolbarLayout.title = name ?: login
 
             Glide.with(context)
                     .load(avatarUrl)
