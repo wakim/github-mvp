@@ -35,7 +35,7 @@ test:
   post:
     - cp -r app/build/reports/androidTests/connected/flavors/DEVELOPMENT $CIRCLE_TEST_REPORTS
 
-deploy:
+deployment:
   master:
       branch: master
       commands:
