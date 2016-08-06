@@ -2,12 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'testfairy'
 
 def final appId = "br.com.github.sample"
 
-def cicleBuild = System.getenv("CI") == "true"
-def final preDexEnabled = "true".equals(System.getProperty("pre-dex", "true")) && !cicleBuild
-def final dexInProcessEnabled = "true".equals(System.getProperty("dex-in-process", "true")) && !cicleBuild
+def circleBuild = System.getenv("CI") == "true"
+def final preDexEnabled = "true".equals(System.getProperty("pre-dex", "true")) && !circleBuild
+def final dexInProcessEnabled = "true".equals(System.getProperty("dex-in-process", "true")) && !circleBuild
+def final testFairyKey = System.getenv("testfairykey")
 
 def final appConfig = [
         "id": appId,
@@ -107,6 +109,21 @@ android {
 //        }
 //    }
 
+    testfairyConfig {
+        apiKey "$testFairyKey"
+        metrics "cpu,memory,network,logcat"
+        video "wifi"
+        videoRate "0.5"
+        videoQuality "low"
+        maxDuration "15m"
+        recordOnBackground true
+        iconWatermark false
+        notify false
+        maxDuration "1h"
+        autoUpdate true
+        uploadProguardMapping true
+    }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -168,7 +185,7 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
-        main.java.srcDirs += 'src/debug/kotlin'
+        debug.java.srcDirs += 'src/debug/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
 }
