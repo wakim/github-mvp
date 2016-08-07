@@ -40,3 +40,8 @@ deployment:
       branch: master
       commands:
         - ./gradlew testfairyProductionRelease
+
+  post:
+    - name=$(2>/dev/null git describe --tags --abbrev=0 || echo "0.0")
+    - code=$(2>/dev/null git rev-list --count HEAD || echo "0")
+    - echo "$name.$code"
