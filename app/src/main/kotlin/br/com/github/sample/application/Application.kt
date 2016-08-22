@@ -15,8 +15,7 @@ import br.com.github.sample.receiver.NetworkBroadcastReceiver
 import com.bumptech.glide.Glide
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
-import rx.plugins.RxJavaErrorHandler
-import rx.plugins.RxJavaPlugins
+import rx.plugins.RxJavaHooks
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -49,11 +48,7 @@ open class Application : android.app.Application(), Thread.UncaughtExceptionHand
                 .build()
         )
 
-        RxJavaPlugins.getInstance().registerErrorHandler (object : RxJavaErrorHandler() {
-            override fun handleError(e: Throwable) {
-                AppLog.e(e)
-            }
-        })
+        RxJavaHooks.setOnError { AppLog.e(it) }
 
         setupCrashReporting()
         setupLeakCanary()
