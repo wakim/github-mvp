@@ -17,7 +17,7 @@ def final appConfig = [
         "versions": [
                 "kotlin": "$kotlin_version",
                 "paper_parcel": "1.0.0",
-                "support_library": "24.1.1",
+                "support_library": "24.2.0",
                 "leak_canary": "1.4-beta2",
                 "dagger": "2.6",
                 "stetho": "1.3.1",

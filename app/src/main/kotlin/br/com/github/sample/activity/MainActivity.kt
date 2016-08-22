@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.LinearSnapHelper
 import android.support.v7.widget.RecyclerView
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -168,6 +169,7 @@ class MainActivity : BaseActivity() {
 
     fun setupRecyclerView() {
         recyclerView.adapter = adapter
+        LinearSnapHelper().attachToRecyclerView(recyclerView)
 
         recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
