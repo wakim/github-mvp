@@ -17,17 +17,13 @@ import android.support.test.espresso.intent.matcher.IntentMatchers.*
 import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
 import br.com.github.sample.R
-import br.com.github.sample.activity.DetailActivity
-import br.com.github.sample.activity.MainActivity
-import br.com.github.sample.adapter.RecyclerViewAdapter
-import br.com.github.sample.api.model.SearchNextPage
-import br.com.github.sample.api.model.SearchResponse
-import br.com.github.sample.api.model.UserRepositoriesResponse
 import br.com.github.sample.application.TestApplication
-import br.com.github.sample.controller.ApiControllerSpec
-import br.com.github.sample.model.Repository
-import br.com.github.sample.model.User
-import br.com.github.sample.model.UserSearch
+import br.com.github.sample.data.model.Repository
+import br.com.github.sample.data.model.User
+import br.com.github.sample.data.model.UserSearch
+import br.com.github.sample.data.remote.model.SearchNextPage
+import br.com.github.sample.data.remote.model.UserRepositoriesResponse
+import br.com.github.sample.ui.RecyclerViewAdapter
 import br.com.github.sample.util.*
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
@@ -36,7 +32,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.*
-import rx.Single
 import java.util.*
 import javax.inject.Inject
 
@@ -91,7 +86,7 @@ class MainActivityTest {
 
         (app.testAppComponent).inject(this)
 
-        // Bad Smell. Must reset because ApiController is @Singleton
+        // Bad Smell. Must reset because UserRepository is @Singleton
         reset(apiController)
 
         System.out.println("Intents.init")

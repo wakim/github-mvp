@@ -16,15 +16,17 @@ import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.rule.ActivityTestRule
 import br.com.github.sample.R
-import br.com.github.sample.activity.DetailActivity
-import br.com.github.sample.adapter.RecyclerViewAdapter
-import br.com.github.sample.api.model.UserRepositoriesResponse
 import br.com.github.sample.application.TestApplication
-import br.com.github.sample.controller.ApiControllerSpec
-import br.com.github.sample.model.Repository
-import br.com.github.sample.model.User
-import br.com.github.sample.model.UserSearch
-import br.com.github.sample.util.*
+import br.com.github.sample.data.UserDataSource
+import br.com.github.sample.data.model.Repository
+import br.com.github.sample.data.model.User
+import br.com.github.sample.data.model.UserSearch
+import br.com.github.sample.data.remote.model.UserRepositoriesResponse
+import br.com.github.sample.ui.RecyclerViewAdapter
+import br.com.github.sample.util.DisableAnimationsRule
+import br.com.github.sample.util.collapsingToolbarTitle
+import br.com.github.sample.util.recyclerViewAdapterCount
+import br.com.github.sample.util.toSingle
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.not
 import org.junit.After
@@ -75,7 +77,7 @@ class DetailActivityTest {
     val disableAnimationsRule = DisableAnimationsRule()
 
     @Inject
-    lateinit var apiController: ApiControllerSpec
+    lateinit var userDataSource: UserDataSource
 
     @Before
     fun setUp() {
@@ -84,10 +86,9 @@ class DetailActivityTest {
 
         (app.testAppComponent).inject(this)
 
-        // Bad Smell. Must reset because ApiController is @Singleton
-        reset(apiController)
+        // Bad Smell. Must reset because UserRepository is @Singleton
+        reset(userDataSource)
 
-        System.out.println("Intents.init")
         Intents.init()
 
         // By default Espresso Intents does not stub any Intents. Stubbing needs to be setup before

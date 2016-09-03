@@ -1,18 +1,17 @@
 package br.com.github.sample.dagger
 
-import br.com.github.sample.application.Application
-import br.com.github.sample.controller.RepositoriesOnSubscribe
-import br.com.github.sample.dagger.modules.ActivityModule
+import br.com.github.sample.Application
 import br.com.github.sample.dagger.modules.ApiModule
 import br.com.github.sample.dagger.modules.AppModule
+import br.com.github.sample.data.DataModule
+import br.com.github.sample.ui.PresenterModule
+import br.com.github.sample.ui.UIComponent
 import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = arrayOf(AppModule::class, ApiModule::class))
+@Component(modules = arrayOf(AppModule::class, ApiModule::class, DataModule::class))
 interface AppComponent {
     fun inject(app: Application)
-    fun inject(repositoriesOnSubscribe: RepositoriesOnSubscribe)
-
-    operator fun plus(activityModule: ActivityModule): ActivityComponent
+    operator fun plus(presenterModule: PresenterModule): UIComponent
 }

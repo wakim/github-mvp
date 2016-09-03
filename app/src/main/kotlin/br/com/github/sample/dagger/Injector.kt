@@ -1,6 +1,7 @@
 package br.com.github.sample.dagger
 
 import android.content.Context
+import br.com.github.sample.ui.UIComponent
 
 abstract class Injector {
 
@@ -13,7 +14,7 @@ abstract class Injector {
     companion object {
 
         private val APP_COMPONENT_SERVICE = "com.app.id.AppComponent"
-        private val ACTIVITY_COMPONENT_SERVICE = "br.com.github.sample.dagger.ActivityComponent"
+        private val UI_COMPONENT_SERVICE = "br.com.github.sample.ui.UIComponent"
 
         @SuppressWarnings("WrongConstant")
         fun obtainAppComponent(context: Context): AppComponent {
@@ -21,11 +22,11 @@ abstract class Injector {
         }
 
         @SuppressWarnings("WrongConstant")
-        fun obtainActivityComponent(context: Context) =
-                context.getSystemService(ACTIVITY_COMPONENT_SERVICE) as ActivityComponent
+        fun obtainUIComponent(context: Context) =
+                context.getSystemService(UI_COMPONENT_SERVICE) as UIComponent
 
         fun matchesAppComponentService(name: String) = APP_COMPONENT_SERVICE == name
 
-        fun matchesActivityComponentService(name: String) = ACTIVITY_COMPONENT_SERVICE == name
+        fun matchesActivityComponentService(name: String) = UI_COMPONENT_SERVICE == name
     }
 }
