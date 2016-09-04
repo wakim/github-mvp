@@ -17,6 +17,7 @@ import android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import android.support.test.espresso.intent.matcher.IntentMatchers.isInternal
 import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
+import android.view.WindowManager
 import br.com.github.sample.R
 import br.com.github.sample.application.TestApplication
 import br.com.github.sample.common.util.concat
@@ -89,6 +90,19 @@ class UserSearchFragmentTest {
 
         // Bad Smell. Must reset because UserRepository is @Singleton
         reset(userDataSource)
+
+        val activity = activityRule.activity
+
+        activity.runOnUiThread(
+                {
+                    val flags = WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
+                            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+
+                    activity.window.addFlags(flags)
+                }
+        )
 
         Intents.init()
 
