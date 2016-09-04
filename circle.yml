@@ -21,7 +21,7 @@ dependencies:
 
 test:
   override:
-    - ./gradlew :app:testDevelopmentDebugUnitTest
+    - ./gradlew :app:testDevelopmentDebugUnitTest -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms1024m -Xmx1024m" -Dorg.gradle.daemon=false
     - ./gradlew connectedDevelopmentDebugAndroidTest -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms1024m -Xmx1024m" -Dorg.gradle.daemon=false
   pre:
     - emulator -avd circleci-android22 -no-audio -no-window:
@@ -35,12 +35,13 @@ test:
     
   post:
     - cp -r app/build/test-results/developmentDebug/* $CIRCLE_TEST_REPORTS
+    - cp -r app/build/reports/tests/developmentDebug/* $CIRCLE_TEST_REPORTS
     - cp -r app/build/reports/androidTests/connected/flavors/DEVELOPMENT $CIRCLE_TEST_REPORTS
 
 deployment:
   master:
       branch: master
       commands:
-        - ./gradlew testfairyProductionRelease
+        - ./gradlew testfairyProductionRelease -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms1024m -Xmx1024m" -Dorg.gradle.daemon=false
         - git describe --tags --abbrev=0 || echo "0.0"
         - git rev-list --count HEAD || echo "0"
