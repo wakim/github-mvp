@@ -23,6 +23,7 @@ test:
   override:
     - ./gradlew :app:testDevelopmentDebugUnitTest -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms1024m -Xmx1024m" -Dorg.gradle.daemon=false
     - ./gradlew :app:connectedDevelopmentDebugAndroidTest -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms1024m -Xmx1024m" -Dorg.gradle.daemon=false
+
   pre:
     - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
@@ -32,12 +33,13 @@ test:
     - fb-adb shell settings put global transition_animation_scale 0
     - fb-adb shell settings put global animator_duration_scale 0
     - fb-adb shell input keyevent 82
-    
-  post:
-    - cp -r app/build/test-results/developmentDebug/* $CIRCLE_TEST_REPORTS
-    - cp -r app/build/reports/tests/developmentDebug/* $CIRCLE_TEST_REPORTS
-    - cp -r app/build/reports/androidTests/connected/flavors/DEVELOPMENT $CIRCLE_TEST_REPORTS
 
+  post:
+    - mkdir $CIRCLE_TEST_REPORTS/instrumentation_tests
+    - mkdir $CIRCLE_TEST_REPORTS/unit_tests
+    - cp -r app/build/test-results/developmentDebug/* $CIRCLE_TEST_REPORTS/unit_tests
+    - cp -r app/build/reports/tests/developmentDebug/* $CIRCLE_TEST_REPORTS/unit_tests
+    - cp -r app/build/reports/androidTests/connected/flavors/DEVELOPMENT/* $CIRCLE_TEST_REPORTS/instrumentation_tests
 deployment:
   master:
       branch: master
