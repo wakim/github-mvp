@@ -1,4 +1,4 @@
-package br.com.github.sample.ui.search
+package br.com.github.sample.ui.search.repositorysearch
 
 import android.content.Context
 import android.util.AttributeSet

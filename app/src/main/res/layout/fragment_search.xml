@@ -2,14 +2,30 @@
 <android.support.v4.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/swipe_refresh_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:listitem="@layout/list_item_user"/>
+
+        <TextView
+            android:id="@+id/tv_empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:gravity="center"
+            android:text="@string/no_users_found"
+            android:visibility="gone" />
+    </FrameLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

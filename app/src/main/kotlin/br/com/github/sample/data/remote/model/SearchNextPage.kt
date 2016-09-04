@@ -4,10 +4,10 @@ import nz.bradcampbell.paperparcel.PaperParcel
 import nz.bradcampbell.paperparcel.PaperParcelable
 
 @PaperParcel
-class SearchNextPage(val nextPageUser: Int, val nextPageRepository: Int): NextPage, PaperParcelable {
+class SearchNextPage(val index: Int): NextPage, PaperParcelable {
 
     override val hasMore: Boolean
-        get() = nextPageUser > 0 || nextPageRepository > 0
+        get() = index > 0
 
     companion object {
         @JvmField val CREATOR = PaperParcelable.Creator(SearchNextPage::class.java)

@@ -8,21 +8,22 @@ import br.com.github.sample.data.remote.model.UserRepositoriesResponse
 import br.com.github.sample.data.remote.model.UserSearchResponse
 import br.com.github.sample.util.extensions.hasMore
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 
 class UserRepository(val apiService: ApiService): UserDataSource {
 
-    override fun search(query: String, nextPage: NextPage?): Single<UserSearchResponse> {
+    override fun search(query: String, nextPage: NextPage?): Observable<UserSearchResponse> {
         val searchNextPage = nextPage as? SearchNextPage
-        val usersPage = searchNextPage?.nextPageUser ?: 1
+        val usersPage = searchNextPage?.index ?: 1
 
         return apiService.searchUsers("$query in:login", usersPage)
-                .map { body -> body.body().copy(hasMore = body.hasMore()) }
-                .toSingle()
+                .map { body ->
+                    body.body()
+                            .copy(nextPage = if (body.hasMore()) SearchNextPage(usersPage + 1) else null)
+                }
     }
 
-    override fun getUser(username: String): Single<Pair<User, UserRepositoriesResponse>> {
+    override fun getUser(username: String): Observable<Pair<User, UserRepositoriesResponse>> {
         val userObservable = apiService.getUser(username)
         val repositoriesObservable = getRepositories(username, 1)
 
@@ -30,7 +31,6 @@ class UserRepository(val apiService: ApiService): UserDataSource {
                 BiFunction { user: User, repoResponse: UserRepositoriesResponse ->
                     user to repoResponse
                 })
-                .toSingle()
     }
 
     fun getRepositories(username: String, page: Int): Observable<UserRepositoriesResponse> =

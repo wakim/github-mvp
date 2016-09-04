@@ -1,37 +1,23 @@
 package br.com.github.sample.ui
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.support.annotation.StringRes
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.NavUtils
 import android.support.v4.app.TaskStackBuilder
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import br.com.github.sample.Application
 import br.com.github.sample.R
-import br.com.github.sample.dagger.Injector
-import butterknife.bindView
+import butterknife.bindOptionalView
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
-import javax.inject.Inject
 
 open class BaseActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var app: Application
-
-    val toolbar: Toolbar? by bindView(R.id.toolbar)
-
-    lateinit var activityComponent: UIComponent
-
-    internal var loadingDialog: AlertDialog? = null
+    val toolbar: Toolbar? by bindOptionalView(R.id.toolbar)
 
     internal var stopped = false
-
-    internal var isDialogShowing = false
 
     var coordinatorLayout: CoordinatorLayout? = null
 
@@ -90,18 +76,10 @@ open class BaseActivity : AppCompatActivity() {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
 
-    override fun getSystemService(name: String): Any {
-        if (Injector.matchesActivityComponentService(name)) {
-            return activityComponent
-        }
-
-        return super.getSystemService(name)
-    }
-
     public override fun onDestroy() {
         super.onDestroy()
 
-        app.let {
+        Application.INSTANCE?.let {
             it.onForegroundActivityDestroy(this)
             it.watch(this)
         }
@@ -110,7 +88,7 @@ open class BaseActivity : AppCompatActivity() {
     override fun onResume() {
         stopped = false
         super.onResume()
-        app.onForegroundActivityResume(this)
+        Application.INSTANCE?.onForegroundActivityResume(this)
     }
 
     override fun onStop() {
@@ -122,33 +100,6 @@ open class BaseActivity : AppCompatActivity() {
         val view = if (coordinatorLayout == null) findViewById(android.R.id.content) else coordinatorLayout
 
         return Snackbar.make(view!!, messageResId, duration).apply { show() }
-    }
-
-    fun showLoading() {
-        hideLoading()
-        isDialogShowing = true
-
-        buildNewLoadingDialog().show()
-    }
-
-    fun hideLoading() {
-        if (isDialogShowing) {
-            isDialogShowing = false
-
-            try {
-                if (loadingDialog != null) {
-                    loadingDialog!!.dismiss()
-                }
-            } catch (ignored: IllegalArgumentException) { }
-        }
-    }
-
-    internal fun buildNewLoadingDialog(): AlertDialog {
-        loadingDialog = AlertDialog.Builder(this).setView(R.layout.dialog_loading).setCancelable(false).create()
-
-        loadingDialog!!.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-        return loadingDialog!!
     }
 
     companion object {

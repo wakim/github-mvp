@@ -13,5 +13,6 @@ import javax.inject.Singleton
 @Component(modules = arrayOf(AppModule::class, ApiModule::class, DataModule::class))
 interface AppComponent {
     fun inject(app: Application)
+
     operator fun plus(presenterModule: PresenterModule): UIComponent
 }

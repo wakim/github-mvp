@@ -11,10 +11,13 @@ class RepositoryRepository(val apiService: ApiService): RepositoryDataSource {
 
     override fun search(query: String, nextPage: NextPage?): Single<RepositorySearchResponse> {
         val searchNextPage = nextPage as? SearchNextPage
-        val page = searchNextPage?.nextPageUser ?: 1
+        val page = searchNextPage?.index ?: 1
 
         return apiService.searchRepositories(query, page)
-                .map { body -> body.body().copy(hasMore = body.hasMore()) }
+                .map { body ->
+                    body.body()
+                            .copy(nextPage = if (body.hasMore()) SearchNextPage(page + 1) else null)
+                }
                 .toSingle()
     }
 }

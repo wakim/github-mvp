@@ -3,6 +3,9 @@
     <string name="no_connectivity">No connectivity</string>
     <string name="not_logged">Not logged in</string>
     <string name="unknown_error">Unknown Error</string>
+    <string name="error_loading_users">Error loading users</string>
+    <string name="no_users_found">No users found</string>
+    <string name="no_repositories_found">No repositories found</string>
 
     <string name="search_user">Search user</string>
     <string name="search_user_or_repository">Search user or repository</string>
@@ -19,4 +22,6 @@
     <string name="public_repositories">Public Repositories</string>
 
     <string name="retry">Retry</string>
+    <string name="users">Users</string>
+    <string name="repositories">Repositories</string>
 </resources>

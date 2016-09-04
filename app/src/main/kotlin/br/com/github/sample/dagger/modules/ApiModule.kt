@@ -43,7 +43,7 @@ open class ApiModule(var baseUrl: String) {
                 }
             }
             .addInterceptor {
-                if (application.isNetworkConnected) {
+                if (!application.isNetworkConnected) {
                     throw NetworkConnectivityException()
                 }
 

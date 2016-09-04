@@ -2,6 +2,9 @@
     <string name="no_connectivity">Sem conectividade</string>
     <string name="not_logged">Não logado</string>
     <string name="unknown_error">Erro desconhecido</string>
+    <string name="error_loading_users">Erro ao buscar usuários</string>
+    <string name="no_users_found">Nenhum usuário encontrado</string>
+    <string name="no_repositories_found">Nenhum repositório encontrado</string>
 
     <string name="search_user">Buscar usuário</string>
     <string name="search_user_or_repository">Buscar usuário ou repositório</string>
@@ -18,4 +21,6 @@
     <string name="public_repositories">Repositórios Públicos</string>
 
     <string name="retry">Tentar novamente</string>
+    <string name="users">Usuários</string>
+    <string name="repositories">Repositórios</string>
 </resources>

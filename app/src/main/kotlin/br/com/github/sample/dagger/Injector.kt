@@ -27,6 +27,6 @@ abstract class Injector {
 
         fun matchesAppComponentService(name: String) = APP_COMPONENT_SERVICE == name
 
-        fun matchesActivityComponentService(name: String) = UI_COMPONENT_SERVICE == name
+        fun matchesUIComponentService(name: String) = UI_COMPONENT_SERVICE == name
     }
 }
