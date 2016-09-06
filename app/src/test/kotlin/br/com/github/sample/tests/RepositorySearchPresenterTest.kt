@@ -13,9 +13,11 @@ import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
 
-val REPOSITORIES = newRepositoryList(4)
-
 class RepositorySearchPresenterTest {
+
+    companion object {
+        val REPOSITORIES = newRepositoryList(4)
+    }
 
     val schedulerProvider = TestSchedulerProvider()
 

@@ -35,5 +35,5 @@ class UserRepository(val apiService: ApiService): UserDataSource {
 
     fun getRepositories(username: String, page: Int): Observable<UserRepositoriesResponse> =
             apiService.getRepositories(username)
-                    .map { UserRepositoriesResponse(it, false) }
+                    .map { UserRepositoriesResponse(it, null) }
 }

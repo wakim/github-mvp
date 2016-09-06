@@ -2,23 +2,35 @@ package br.com.github.sample.tests
 
 import android.app.Activity
 import android.app.Instrumentation
+import android.content.Intent
 import android.support.test.InstrumentationRegistry
+import android.support.test.espresso.Espresso.onView
+import android.support.test.espresso.action.ViewActions.click
+import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import android.support.test.espresso.intent.Intents
 import android.support.test.espresso.intent.Intents.intending
 import android.support.test.espresso.intent.matcher.IntentMatchers.isInternal
+import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
+import br.com.github.sample.R
 import br.com.github.sample.application.TestApplication
+import br.com.github.sample.common.util.toObservable
 import br.com.github.sample.data.UserDataSource
 import br.com.github.sample.data.model.Repository
 import br.com.github.sample.data.model.User
 import br.com.github.sample.data.model.UserSearch
+import br.com.github.sample.data.remote.model.UserRepositoriesResponse
+import br.com.github.sample.ui.RecyclerViewAdapter
 import br.com.github.sample.ui.userdetail.UserDetailActivity
-import br.com.github.sample.util.DisableAnimationsRule
+import br.com.github.sample.util.*
+import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.mockito.Mockito.reset
+import org.junit.Test
+import org.mockito.Mockito.*
 import java.util.*
 import javax.inject.Inject
 
@@ -89,38 +101,37 @@ class UserDetailActivityTest {
         } catch (ignored: Throwable) { ignored.printStackTrace() }
     }
 
-    /*
     @Test
     fun shouldShowUserInfo() {
         val username = USERS_SEARCH.first().login
         val user = USERS.first()
 
-        `when`(apiController.getUser(username))
-                .thenReturn((user to UserRepositoriesResponse(emptyList(), false)).toSingle())
+        `when`(userDataSource.getUser(username))
+                .thenReturn((user to UserRepositoriesResponse(emptyList(), null)).toObservable())
 
-        activityRule.launchActivity(Intent().putExtra(DetailActivity.USERNAME_EXTRA, username))
+        activityRule.launchActivity(Intent().putExtra(UserDetailActivity.USERNAME_EXTRA, username))
 
         verifyUser(user)
 
-        verify(apiController).getUser(username)
-        verifyNoMoreInteractions(apiController)
+        verify(userDataSource).getUser(username)
+        verifyNoMoreInteractions(userDataSource)
     }
 
     @Test
     fun shouldShowSnackWhenErrorLoadingUser() {
         val username = USERS_SEARCH.first().login
 
-        `when`(apiController.getUser(username))
-                .thenReturn(NullPointerException().toSingle())
+        `when`(userDataSource.getUser(username))
+                .thenReturn(NullPointerException().toObservable())
 
-        activityRule.launchActivity(Intent().putExtra(DetailActivity.USERNAME_EXTRA, username))
+        activityRule.launchActivity(Intent().putExtra(UserDetailActivity.USERNAME_EXTRA, username))
 
         onView(withId(R.id.snackbar_text))
-                .check(matches(Matchers.allOf(ViewMatchers.isDisplayed(), withText(R.string.unknown_error))))
+                .check(matches(allOf(isDisplayed(), withText(R.string.error_loading_user))))
 
-        verify(apiController).getUser(username)
+        verify(userDataSource).getUser(username)
 
-        verifyNoMoreInteractions(apiController)
+        verifyNoMoreInteractions(userDataSource)
     }
 
     @Test
@@ -128,20 +139,20 @@ class UserDetailActivityTest {
         val username = USERS_SEARCH.first().login
         val user = USERS.first()
 
-        `when`(apiController.getUser(username))
-                .thenReturn(NullPointerException().toSingle())
+        `when`(userDataSource.getUser(username))
+                .thenReturn(NullPointerException().toObservable())
 
-        activityRule.launchActivity(Intent().putExtra(DetailActivity.USERNAME_EXTRA, username))
+        activityRule.launchActivity(Intent().putExtra(UserDetailActivity.USERNAME_EXTRA, username))
 
-        `when`(apiController.getUser(username))
-                .thenReturn((user to UserRepositoriesResponse(emptyList(), false)).toSingle())
+        `when`(userDataSource.getUser(username))
+                .thenReturn((user to UserRepositoriesResponse(emptyList(), null)).toObservable())
 
         onView(withId(R.id.snackbar_action))
                 .perform(click())
 
-        verify(apiController, times(2)).getUser(username)
+        verify(userDataSource, times(2)).getUser(username)
 
-        verifyNoMoreInteractions(apiController)
+        verifyNoMoreInteractions(userDataSource)
     }
 
     @Test
@@ -149,19 +160,42 @@ class UserDetailActivityTest {
         val username = USERS_SEARCH.first().login
         val user = USERS.first()
 
-        `when`(apiController.getUser(username))
-                .thenReturn((user to UserRepositoriesResponse(REPOSITORIES, false)).toSingle())
+        `when`(userDataSource.getUser(username))
+                .thenReturn((user to UserRepositoriesResponse(REPOSITORIES, null)).toObservable())
 
-        activityRule.launchActivity(Intent().putExtra(DetailActivity.USERNAME_EXTRA, username))
+        activityRule.launchActivity(Intent().putExtra(UserDetailActivity.USERNAME_EXTRA, username))
 
         verifyUser(user)
 
         onView(withId(R.id.recycler_view))
                 .check(recyclerViewAdapterCount(REPOSITORIES.size + 1))
 
-        verify(apiController).getUser(username)
+        verify(userDataSource).getUser(username)
 
-        verifyNoMoreInteractions(apiController)
+        verifyNoMoreInteractions(userDataSource)
+    }
+
+    @Test
+    fun shouldPresentEmptyRepositories() {
+        val username = USERS_SEARCH.first().login
+        val user = USERS.first()
+
+        `when`(userDataSource.getUser(username))
+                .thenReturn((user to UserRepositoriesResponse(emptyList(), null)).toObservable())
+
+        activityRule.launchActivity(Intent().putExtra(UserDetailActivity.USERNAME_EXTRA, username))
+
+        verifyUser(user)
+
+        onView(withId(R.id.recycler_view))
+                .check(recyclerViewAdapterCount(1))
+
+        onView(withRecyclerViewId(R.id.recycler_view).atPositionOnView(0, R.id.tv_repositories_header))
+                .check(matches(withText(R.string.no_repositories_found)))
+
+        verify(userDataSource).getUser(username)
+
+        verifyNoMoreInteractions(userDataSource)
     }
 
     @Test
@@ -169,23 +203,23 @@ class UserDetailActivityTest {
         val username = USERS_SEARCH.first().login
         val user = USERS.first()
 
-        `when`(apiController.getUser(username))
-                .thenReturn((user to UserRepositoriesResponse(REPOSITORIES, false)).toSingle())
+        `when`(userDataSource.getUser(username))
+                .thenReturn((user to UserRepositoriesResponse(REPOSITORIES, null)).toObservable())
 
-        activityRule.launchActivity(Intent().putExtra(DetailActivity.USERNAME_EXTRA, username))
+        activityRule.launchActivity(Intent().putExtra(UserDetailActivity.USERNAME_EXTRA, username))
 
         REPOSITORIES.asSequence()
                 .forEachIndexed { i, repository ->
                     onView(withId(R.id.recycler_view))
                             .perform(scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(i + 1))
 
-                    onView(withRecyclerView(R.id.recycler_view).atPositionOnView(i + 1, R.id.tv_repository_name))
+                    onView(withRecyclerViewId(R.id.recycler_view).atPositionOnView(i + 1, R.id.tv_repository_name))
                             .check(matches(withText(repository.fullName)))
                 }
 
-        verify(apiController).getUser(username)
+        verify(userDataSource).getUser(username)
 
-        verifyNoMoreInteractions(apiController)
+        verifyNoMoreInteractions(userDataSource)
     }
 
     @Test
@@ -193,19 +227,19 @@ class UserDetailActivityTest {
         val username = USERS_SEARCH.first().login
         val user = USERS.first()
 
-        `when`(apiController.getUser(username))
-                .thenReturn((user to UserRepositoriesResponse(REPOSITORIES, false)).toSingle())
+        `when`(userDataSource.getUser(username))
+                .thenReturn((user to UserRepositoriesResponse(REPOSITORIES, null)).toObservable())
 
-        activityRule.launchActivity(Intent().putExtra(DetailActivity.USERNAME_EXTRA, username))
+        activityRule.launchActivity(Intent().putExtra(UserDetailActivity.USERNAME_EXTRA, username))
 
         activityRule.activity.rotateScreen()
 
         onView(withId(R.id.recycler_view))
                 .check(recyclerViewAdapterCount(REPOSITORIES.size + 1))
 
-        verify(apiController).getUser(username)
+        verify(userDataSource).getUser(username)
 
-        verifyNoMoreInteractions(apiController)
+        verifyNoMoreInteractions(userDataSource)
     }
 
     fun verifyUser(user: User) {
@@ -241,5 +275,4 @@ class UserDetailActivityTest {
         onView(withId(R.id.tv_hireable))
                 .check(matches(withText(if (user.hireable) "✓" else "×")))
     }
-    */
 }

@@ -144,7 +144,7 @@ class UserSearchFragmentTest {
                 .thenReturn(UserSearchResponse(USERS_SEARCH, null).toObservable())
 
         `when`(userDataSource.getUser(USERS_SEARCH[0].login))
-                .thenReturn((USERS[0] to UserRepositoriesResponse(emptyList(), false)).toObservable())
+                .thenReturn((USERS[0] to UserRepositoriesResponse(emptyList(), null)).toObservable())
 
         activityRule.launchActivity(Intent())
 

@@ -32,7 +32,7 @@ class UserSearchFragment : BaseSearchFragment(), UserSearchContract.View {
         adapter.clickListener = { user: SearchItem ->
             val intent = Intent(context, UserDetailActivity::class.java)
                     .putExtra(BaseActivity.PARENT_EXTRA, activity.javaClass.name)
-                    .putExtra("USER", user as UserSearch)
+                    .putExtra(UserDetailActivity.USERNAME_EXTRA, (user as UserSearch).login)
 
             startActivity(intent)
         }

@@ -3,6 +3,7 @@
     <string name="not_logged">Não logado</string>
     <string name="unknown_error">Erro desconhecido</string>
     <string name="error_loading_users">Erro ao buscar usuários</string>
+    <string name="error_loading_user">Erro ao buscar usuário</string>
     <string name="no_users_found">Nenhum usuário encontrado</string>
     <string name="no_repositories_found">Nenhum repositório encontrado</string>
 

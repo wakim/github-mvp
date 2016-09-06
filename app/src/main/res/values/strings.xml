@@ -4,6 +4,7 @@
     <string name="not_logged">Not logged in</string>
     <string name="unknown_error">Unknown Error</string>
     <string name="error_loading_users">Error loading users</string>
+    <string name="error_loading_user">Error loading user</string>
     <string name="no_users_found">No users found</string>
     <string name="no_repositories_found">No repositories found</string>
 

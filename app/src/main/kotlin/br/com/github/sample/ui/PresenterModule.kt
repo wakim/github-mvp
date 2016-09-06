@@ -6,6 +6,8 @@ import br.com.github.sample.ui.search.repositorysearch.RepositorySearchContract
 import br.com.github.sample.ui.search.repositorysearch.RepositorySearchPresenter
 import br.com.github.sample.ui.search.usersearch.UserSearchContract
 import br.com.github.sample.ui.search.usersearch.UserSearchPresenter
+import br.com.github.sample.ui.userdetail.UserDetailContract
+import br.com.github.sample.ui.userdetail.UserDetailPresenter
 import br.com.github.sample.util.schedulers.SchedulerProviderContract
 import dagger.Module
 import dagger.Provides
@@ -33,5 +35,16 @@ class PresenterModule(private val view: BaseView) {
         }
 
         return RepositorySearchPresenter(view, schedulerProvider, repositoryDataSource)
+    }
+
+    @Provides
+    @UIScope
+    fun providesUserDetailPresenter(schedulerProvider: SchedulerProviderContract,
+                                    repositoryDataSource: UserDataSource): UserDetailContract.Presenter {
+        if (view !is UserDetailContract.View) {
+            throw AssertionError("Wrong view for presenter")
+        }
+
+        return UserDetailPresenter(view, schedulerProvider, repositoryDataSource)
     }
 }

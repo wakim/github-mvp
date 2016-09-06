@@ -13,9 +13,11 @@ import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
 
-val USERS = newUserSearchList(4)
-
 class UserSearchPresenterTest {
+
+    companion object {
+        val USERS = newUserSearchList(4)
+    }
 
     val schedulerProvider = TestSchedulerProvider()
 

@@ -23,4 +23,10 @@ fun withRecyclerViewTag(tag: String) =
             override fun describe(): String = "with tag $tag"
         })
 
+fun withRecyclerViewId(id: Int) =
+        RecyclerViewMatcher(object: RecyclerViewMatcher.RecyclerViewFinder {
+            override fun find(rootView: View): RecyclerView? = rootView.findViewById(id) as? RecyclerView
+            override fun describe(): String = "with id $id"
+        })
+
 fun allOfDisplayed(id: Int): Matcher<View> = allOf(withId(id), isDisplayed())

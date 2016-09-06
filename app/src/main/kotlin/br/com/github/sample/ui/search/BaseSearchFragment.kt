@@ -28,7 +28,7 @@ abstract class BaseSearchFragment : Fragment() {
     val recyclerView: RecyclerView by bindView(R.id.recycler_view)
     val emptyView: TextView by bindView(R.id.tv_empty_view)
 
-    internal val adapter: SearchAdapter by lazy {
+    val adapter: SearchAdapter by lazy {
         SearchAdapter(context)
     }
 

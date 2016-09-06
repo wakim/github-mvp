@@ -260,7 +260,6 @@ dependencies {
     debugCompile "com.squareup.leakcanary:leakcanary-android:$appConfig.versions.leak_canary"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$appConfig.versions.leak_canary"
 
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha4'
 
     testCompile "junit:junit:$appConfig.versions.junit"
     testCompile "org.mockito:mockito-all:$appConfig.versions.mockito"
@@ -286,6 +285,7 @@ dependencies {
 
     androidTestCompile "com.google.dexmaker:dexmaker:$appConfig.versions.dexmaker"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$appConfig.versions.dexmaker"
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha7'
 }
 
 task grantAnimationPermission(type: Exec, dependsOn: 'installDevelopmentDebug') {
