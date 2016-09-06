@@ -1,5 +1,6 @@
 package br.com.github.sample.ui
 
+import br.com.github.sample.data.RepositoryDataSource
 import br.com.github.sample.data.UserDataSource
 import br.com.github.sample.ui.search.repositorysearch.RepositorySearchContract
 import br.com.github.sample.ui.search.repositorysearch.RepositorySearchPresenter
@@ -26,11 +27,11 @@ class PresenterModule(private val view: BaseView) {
     @Provides
     @UIScope
     fun providesRepositorySearchPresenter(schedulerProvider: SchedulerProviderContract,
-                                          userDataSource: UserDataSource): RepositorySearchContract.Presenter {
+                                          repositoryDataSource: RepositoryDataSource): RepositorySearchContract.Presenter {
         if (view !is RepositorySearchContract.View) {
             throw AssertionError("Wrong view for presenter")
         }
 
-        return RepositorySearchPresenter(view, schedulerProvider, userDataSource)
+        return RepositorySearchPresenter(view, schedulerProvider, repositoryDataSource)
     }
 }

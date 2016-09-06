@@ -6,13 +6,12 @@ import android.content.Intent
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.*
-import android.support.test.espresso.assertion.ViewAssertions
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import android.support.test.espresso.intent.Intents
 import android.support.test.espresso.intent.Intents.intended
 import android.support.test.espresso.intent.Intents.intending
-import android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import android.support.test.espresso.intent.matcher.IntentMatchers.hasAction
 import android.support.test.espresso.intent.matcher.IntentMatchers.isInternal
 import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
@@ -22,15 +21,12 @@ import br.com.github.sample.common.util.concat
 import br.com.github.sample.common.util.toObservable
 import br.com.github.sample.data.RepositoryDataSource
 import br.com.github.sample.data.UserDataSource
-import br.com.github.sample.data.model.User
-import br.com.github.sample.data.model.UserSearch
+import br.com.github.sample.data.model.Repository
 import br.com.github.sample.data.remote.model.RepositorySearchResponse
 import br.com.github.sample.data.remote.model.SearchNextPage
-import br.com.github.sample.data.remote.model.UserRepositoriesResponse
 import br.com.github.sample.data.remote.model.UserSearchResponse
 import br.com.github.sample.ui.RecyclerViewAdapter
 import br.com.github.sample.ui.search.SearchActivity
-import br.com.github.sample.ui.userdetail.UserDetailActivity
 import br.com.github.sample.util.*
 import io.reactivex.Observable
 import org.hamcrest.Matchers.allOf
@@ -43,26 +39,16 @@ import org.mockito.Mockito.*
 import java.util.*
 import javax.inject.Inject
 
-class UserSearchFragmentTest {
+class RepositorySearchFragmentTest {
 
     companion object {
-        val EMPTY_USERS = emptyList<UserSearch>()
-
-        val imageUrl = "http://www.nitwaa.in/media//1/profile_pictures/raghavender-mittapalli/raghavender-mittapalli-present.png"
-
-        val USERS_SEARCH: List<UserSearch> = Collections.unmodifiableList(listOf(
-                UserSearch("sample1", 10L, imageUrl, "https://www.github.com/sample1"),
-                UserSearch("sample2", 11L, imageUrl, "https://www.github.com/sample2"),
-                UserSearch("sample3", 12L, imageUrl, "https://www.github.com/sample3")
-        ))
-
-        val USERS: List<User> = Collections.unmodifiableList(listOf(
-                User("Sample 1", "sample1", imageUrl, "Company 1", "https://www.google.com", "Rio de Janeiro",
-                        "1@sample.com", false, "User Sample 1", 10, 10, 10, 10, Date(), Date()),
-                User("Sample 2", "sample2", imageUrl, "Company 2", "https://www.google.com", "Rio de Janeiro",
-                        "2@sample.com", false, "User Sample 2", 10, 10, 10, 10, Date(), Date()),
-                User("Sample 3", "sample3", imageUrl, "Company 3", "https://www.google.com", "Rio de Janeiro",
-                        "3@sample.com", false, "User Sample 3", 10, 10, 10, 10, Date(), Date())
+        val REPOSITORIES: List<Repository> = Collections.unmodifiableList(listOf(
+                Repository("Repository 1", "sample/repository 1", "Sample Repository 1",
+                        "https://www.github.com/sample/repository1", 100, 100, 100, 0, "Kotlin"
+                ),
+                Repository("Repository 2", "sample/repository2", "Sample Repository 2",
+                        "https://www.github.com/sample/repository2", 100, 100, 100, 0, "Kotlin"
+                )
         ))
     }
 
@@ -76,10 +62,10 @@ class UserSearchFragmentTest {
     val disableAnimationsRule = DisableAnimationsRule()
 
     @Inject
-    lateinit var userDataSource: UserDataSource
+    lateinit var repositoryDataSource: RepositoryDataSource
 
     @Inject
-    lateinit var repositoryDataSource: RepositoryDataSource
+    lateinit var userDataSource: UserDataSource
 
     @Before
     fun setUp() {
@@ -89,7 +75,7 @@ class UserSearchFragmentTest {
         (app.testAppComponent).inject(this)
 
         // Bad Smell. Must reset because UserRepository is @Singleton
-        reset(userDataSource)
+        reset(repositoryDataSource)
 
         Intents.init()
 
@@ -98,8 +84,8 @@ class UserSearchFragmentTest {
         intending(not(isInternal()))
                 .respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
 
-        `when`(repositoryDataSource.search(anyString(), any()))
-                .thenReturn(RepositorySearchResponse(emptyList(), null).toObservable())
+        `when`(userDataSource.search(anyString(), any()))
+                .thenReturn(UserSearchResponse(emptyList(), null).toObservable())
     }
 
     @After
@@ -118,98 +104,109 @@ class UserSearchFragmentTest {
     }
 
     @Test
-    fun shouldListUsers() {
+    fun shouldListRepositories() {
         val query = "Teste"
 
-        `when`(userDataSource.search(query, null))
-                .thenReturn(UserSearchResponse(USERS_SEARCH, SearchNextPage(-1)).toObservable())
+        `when`(repositoryDataSource.search(query, null))
+                .thenReturn(RepositorySearchResponse(REPOSITORIES, null).toObservable())
 
         activityRule.launchActivity(Intent())
 
+        showRepositoriesPage()
+
         doSearch(query)
 
-        USERS_SEARCH.asSequence()
-                .forEachIndexed { i, userSearch ->
-                    onView(withRecyclerViewTag("USER_RECYCLERVIEW")
-                            .atPositionOnView(i, R.id.tv_person_name))
-                            .check(matches(withText(userSearch.login)))
+        REPOSITORIES.asSequence()
+                .forEachIndexed { i, repository ->
+                    onView(allOfDisplayed(R.id.recycler_view))
+                            .perform(scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(i))
+
+                    onView(withRecyclerViewTag("REPOSITORY_RECYCLERVIEW")
+                            .atPositionOnView(i, R.id.tv_repository_name))
+                            .check(matches(withText(repository.fullName)))
                 }
     }
 
     @Test
-    fun shouldOpenDetailWhenClickOnUser() {
+    fun shouldOpenBrowserWhenClickOnRepository() {
         val query = "Teste"
 
-        `when`(userDataSource.search(query, null))
-                .thenReturn(UserSearchResponse(USERS_SEARCH, null).toObservable())
-
-        `when`(userDataSource.getUser(USERS_SEARCH[0].login))
-                .thenReturn((USERS[0] to UserRepositoriesResponse(emptyList(), false)).toObservable())
+        `when`(repositoryDataSource.search(query, null))
+                .thenReturn(RepositorySearchResponse(REPOSITORIES, null).toObservable())
 
         activityRule.launchActivity(Intent())
 
+        showRepositoriesPage()
+
         doSearch(query)
 
-        onView(withRecyclerViewTag("USER_RECYCLERVIEW")
-                .atPosition(0))
+        onView(withRecyclerViewTag("REPOSITORY_RECYCLERVIEW").atPosition(0))
                 .perform(click())
 
-        intended(hasComponent(UserDetailActivity::class.java.name))
+        intended(hasAction(Intent.ACTION_VIEW))
     }
 
     @Test
     fun shouldShowEmptyViewWhenNoResults() {
         val query = "Teste"
 
-        `when`(userDataSource.search(query, null))
-                .thenReturn(UserSearchResponse(EMPTY_USERS, null).toObservable())
+        `when`(repositoryDataSource.search(query, null))
+                .thenReturn(RepositorySearchResponse(emptyList(), null).toObservable())
 
         activityRule.launchActivity(Intent())
 
+        showRepositoriesPage()
+
         doSearch(query)
 
-        onView(withTag("USER_RECYCLERVIEW"))
+        onView(withTag("REPOSITORY_RECYCLERVIEW"))
                 .check(recyclerViewAdapterCount(0))
 
         onView(allOfDisplayed(R.id.tv_empty_view))
                 .check(matches(allOf(isDisplayed(), withText(R.string.no_users_found))))
 
-        verify(userDataSource).search(query, null)
-        verifyNoMoreInteractions(userDataSource)
+        verify(repositoryDataSource).search(query, null)
+        verifyNoMoreInteractions(repositoryDataSource)
     }
 
     @Test
     fun shouldLoadAgainWhenSwipeToRefresh() {
         val query = "Teste"
 
-        `when`(userDataSource.search(query, null))
-                .thenReturn(UserSearchResponse(USERS_SEARCH, null).toObservable())
+        `when`(repositoryDataSource.search(query, null))
+                .thenReturn(RepositorySearchResponse(REPOSITORIES, null).toObservable())
 
         activityRule.launchActivity(Intent())
 
+        showRepositoriesPage()
+
         doSearch(query)
 
-        onView(allOfDisplayed(R.id.recycler_view)).check(recyclerViewAdapterCount(USERS_SEARCH.size))
-        onView(allOfDisplayed(R.id.swipe_refresh_layout)).perform(swipeDown())
+        onView(allOfDisplayed(R.id.recycler_view))
+                .check(recyclerViewAdapterCount(REPOSITORIES.size))
+        onView(allOfDisplayed(R.id.swipe_refresh_layout))
+                .perform(swipeDown())
 
-        verify(userDataSource, times(2)).search(query, null)
-        verifyNoMoreInteractions(userDataSource)
+        verify(repositoryDataSource, times(2)).search(query, null)
+        verifyNoMoreInteractions(repositoryDataSource)
     }
 
     @Test
     fun shouldNotUpdateRecyclerViewWhenSwipeRefreshError() {
         val query = "Teste"
 
-        `when`(userDataSource.search(query, null))
-                .thenReturn(UserSearchResponse(USERS_SEARCH, null).toObservable(),
-                        Observable.error<UserSearchResponse>(NullPointerException()))
+        `when`(repositoryDataSource.search(query, null))
+                .thenReturn(RepositorySearchResponse(REPOSITORIES, null).toObservable(),
+                        Observable.error<RepositorySearchResponse>(NullPointerException()))
 
         activityRule.launchActivity(Intent())
+
+        showRepositoriesPage()
 
         doSearch(query)
 
         onView(allOfDisplayed(R.id.recycler_view))
-                .check(recyclerViewAdapterCount(USERS_SEARCH.size))
+                .check(recyclerViewAdapterCount(REPOSITORIES.size))
 
         onView(allOfDisplayed(R.id.swipe_refresh_layout))
                 .perform(swipeDown())
@@ -217,24 +214,31 @@ class UserSearchFragmentTest {
         onView(withId(R.id.snackbar_text))
                 .check(matches(allOf(isDisplayed(), withText(R.string.error_loading_users))))
 
-        verify(userDataSource, times(2)).search(query, null)
-        verifyNoMoreInteractions(userDataSource)
+        verify(repositoryDataSource, times(2)).search(query, null)
+        verifyNoMoreInteractions(repositoryDataSource)
     }
 
     @Test
     fun shouldLoadNextPageWhenReachListEnd() {
         val query = "Teste"
-        val list = ArrayList(USERS_SEARCH)
-        val newList = list.concat(list).concat(list).concat(list)
+        val list = ArrayList(REPOSITORIES)
+        val newList = ArrayList<Repository>()
+                .concat(list)
+                .concat(list)
+                .concat(list)
+                .concat(list)
+
         val nextPage = SearchNextPage(2)
 
-        `when`(userDataSource.search(query, null))
-                .thenReturn(UserSearchResponse(newList, nextPage).toObservable())
+        `when`(repositoryDataSource.search(query, null))
+                .thenReturn(RepositorySearchResponse(newList, nextPage).toObservable())
 
-        `when`(userDataSource.search(query, nextPage))
-                .thenReturn(UserSearchResponse(newList, null).toObservable())
+        `when`(repositoryDataSource.search(query, nextPage))
+                .thenReturn(RepositorySearchResponse(list, null).toObservable())
 
         activityRule.launchActivity(Intent())
+
+        showRepositoriesPage()
 
         doSearch(query)
 
@@ -244,36 +248,38 @@ class UserSearchFragmentTest {
         onView(allOfDisplayed(R.id.recycler_view))
                 .check(recyclerViewAdapterCount(newList.size + list.size))
 
-        verify(userDataSource).search(query, null)
-        verify(userDataSource).search(query, nextPage)
+        verify(repositoryDataSource).search(query, null)
+        verify(repositoryDataSource).search(query, nextPage)
 
-        verifyNoMoreInteractions(userDataSource)
+        verifyNoMoreInteractions(repositoryDataSource)
     }
 
     @Test
     fun shouldSaveAndRestoreInstanceState() {
         val query = "Teste"
 
-        `when`(userDataSource.search(query, null))
-                .thenReturn(UserSearchResponse(USERS_SEARCH, null).toObservable())
+        `when`(repositoryDataSource.search(query, null))
+                .thenReturn(RepositorySearchResponse(REPOSITORIES, null).toObservable())
 
         activityRule.launchActivity(Intent())
+
+        showRepositoriesPage()
 
         doSearch(query)
 
         onView(allOfDisplayed(R.id.recycler_view))
-                .check(recyclerViewAdapterCount(USERS_SEARCH.size))
+                .check(recyclerViewAdapterCount(REPOSITORIES.size))
 
         activityRule.activity.rotateScreen()
 
         onView(allOfDisplayed(R.id.recycler_view))
-                .check(recyclerViewAdapterCount(USERS_SEARCH.size))
+                .check(recyclerViewAdapterCount(REPOSITORIES.size))
 
-        onView(withId(R.id.et_search))
-                .check(ViewAssertions.matches(withText(query)))
+        onView(allOfDisplayed(R.id.et_search))
+                .check(matches(withText(query)))
 
-        verify(userDataSource).search(query, null)
-        verifyNoMoreInteractions(userDataSource)
+        verify(repositoryDataSource).search(query, null)
+        verifyNoMoreInteractions(repositoryDataSource)
     }
 
     fun doSearch(text: String) {
@@ -281,5 +287,10 @@ class UserSearchFragmentTest {
             perform(clearText(), replaceText(text))
             perform(pressImeActionButton())
         }
+    }
+
+    fun showRepositoriesPage() {
+        onView(allOfDisplayed(R.id.vp_search))
+                .perform(swipeLeft())
     }
 }

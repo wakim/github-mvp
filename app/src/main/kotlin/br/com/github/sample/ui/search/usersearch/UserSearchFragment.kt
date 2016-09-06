@@ -38,6 +38,11 @@ class UserSearchFragment : BaseSearchFragment(), UserSearchContract.View {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        recyclerView.tag = "USER_RECYCLERVIEW"
+    }
+
     override fun doSearch(query: String, nextPage: NextPage?) {
         presenter.onSearch(query, nextPage)
     }

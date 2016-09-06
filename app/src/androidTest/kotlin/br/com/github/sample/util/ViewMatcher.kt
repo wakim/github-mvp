@@ -11,7 +11,7 @@ import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 
 // Source: https://github.com/dannyroa/espresso-samples/blob/master/RecyclerView/app/src/androidTest/java/com/dannyroa/espresso_samples/recyclerview/RecyclerViewMatcher.java
-class RecyclerViewMatcher(private val recyclerViewId: Int) {
+class RecyclerViewMatcher(private val finder: RecyclerViewFinder) {
 
     fun atPosition(position: Int): Matcher<View> {
         return atPositionOnView(position, -1)
@@ -23,34 +23,20 @@ class RecyclerViewMatcher(private val recyclerViewId: Int) {
             internal var childView: View? = null
 
             override fun describeTo(description: Description) {
-                var idDescription = Integer.toString(recyclerViewId)
-                if (this.resources != null) {
-                    try {
-                        idDescription = this.resources!!.getResourceName(recyclerViewId)
-                    } catch (var4: Resources.NotFoundException) {
-                        idDescription = String.format("%s (resource name not found)",
-                                *arrayOf<Any>(Integer.valueOf(recyclerViewId)))
-                    }
-                }
-
-                description.appendText("with id: " + idDescription)
+                description.appendText("with ${finder.describe()}")
             }
 
             override fun matchesSafely(view: View): Boolean {
                 this.resources = view.resources
 
                 if (childView == null) {
-                    val recyclerView = view.rootView.findViewById(recyclerViewId) as RecyclerView
+                    val recyclerView = finder.find(view.rootView) ?: return false
 
                     if (position >= recyclerView.adapter.itemCount) {
                         throw IndexOutOfBoundsException("Position greater than RecyclerView adapter itemCount")
                     }
 
-                    if (recyclerView.id == recyclerViewId) {
-                        childView = recyclerView.findViewHolderForAdapterPosition(position).itemView
-                    } else {
-                        return false
-                    }
+                    childView = recyclerView.findViewHolderForAdapterPosition(position).itemView
                 }
 
                 if (targetViewId == -1) {
@@ -61,6 +47,11 @@ class RecyclerViewMatcher(private val recyclerViewId: Int) {
                 }
             }
         }
+    }
+
+    interface RecyclerViewFinder {
+        fun find(rootView: View): RecyclerView?
+        fun describe(): String
     }
 }
 
