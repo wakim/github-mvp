@@ -8,13 +8,13 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0-rc1'
+        classpath 'com.android.tools.build:gradle:2.2.0-rc2'
 
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
 
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.5.5'
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.1'
 
         classpath 'com.testfairy.plugins.gradle:testfairy:1.12'
     }
