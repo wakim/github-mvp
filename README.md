@@ -8,7 +8,7 @@ To run this project you need to have:
 
  - JDK 7
  - Android Studio 2.2 or higher
- - Kotlin Plugin 1.0.3 or higher
+ - Kotlin Plugin 1.0.4 or higher
 
 ---
 
