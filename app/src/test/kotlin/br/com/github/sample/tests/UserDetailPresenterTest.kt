@@ -15,6 +15,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
 import java.util.*
 
+@Suppress("IllegalIdentifier")
 class UserDetailPresenterTest {
 
     companion object {
@@ -53,7 +54,7 @@ class UserDetailPresenterTest {
     }
 
     @Test
-    fun shouldLoadUserIntoView() {
+    fun `should load user into view`() {
         val username = "username"
         val user = USERS.first()
 
@@ -71,7 +72,7 @@ class UserDetailPresenterTest {
     }
 
     @Test
-    fun shouldPresentEmptyListWhenLoadingRepositoriesIntoView() {
+    fun `should present empty list when loading repositories into view`() {
         val username = "username"
         val user = USERS.first()
 
@@ -88,7 +89,7 @@ class UserDetailPresenterTest {
     }
 
     @Test
-    fun shouldPresentErrorWhenLoadingUserIntoView() {
+    fun `should present error when loading user into view`() {
         val username = "username"
 
         `when`(dataSource.getUser(username))

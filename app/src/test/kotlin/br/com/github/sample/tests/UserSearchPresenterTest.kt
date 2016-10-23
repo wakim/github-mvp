@@ -13,6 +13,7 @@ import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
 
+@Suppress("IllegalIdentifier")
 class UserSearchPresenterTest {
 
     companion object {
@@ -40,7 +41,7 @@ class UserSearchPresenterTest {
     }
 
     @Test
-    fun shouldLoadUsersIntoView() {
+    fun `should load users into view`() {
         `when`(dataSource.search("wakim", null))
                 .thenReturn(UserSearchResponse(USERS, null).toObservable())
 
@@ -53,7 +54,7 @@ class UserSearchPresenterTest {
     }
 
     @Test
-    fun shouldPresentErrorWhenLoadUsersIntoView() {
+    fun `should present error when load users into view`() {
         `when`(dataSource.search("wakim", null))
                 .thenReturn(NullPointerException().toObservable())
 
@@ -66,7 +67,7 @@ class UserSearchPresenterTest {
     }
 
     @Test
-    fun shouldPresentEmptyViewWhenNoUsersIntoView() {
+    fun `should present empty view when no users into view`() {
         `when`(dataSource.search("wakim", null))
                 .thenReturn(UserSearchResponse(emptyList(), null).toObservable())
 
