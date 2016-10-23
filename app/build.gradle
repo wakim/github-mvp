@@ -1,9 +1,7 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'testfairy'
-apply plugin: 'kotlin-kapt'
 
 def final appId = "br.com.github.sample"
 
@@ -298,4 +296,8 @@ tasks.whenTaskAdded { task ->
     if (task.name.startsWith('connected')) {
         task.dependsOn grantAnimationPermission
     }
+}
+
+kapt {
+    generateStubs = true
 }
