@@ -16,7 +16,8 @@ import br.com.github.sample.ui.PresenterModule
 import br.com.github.sample.ui.RecyclerViewAdapter
 import br.com.github.sample.ui.UIComponent
 import br.com.github.sample.ui.search.repositorysearch.RepositoryView
-import butterknife.bindView
+import butterknife.BindView
+import butterknife.ButterKnife
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.FitCenter
@@ -37,10 +38,11 @@ class UserDetailActivity: BaseActivity(), UserDetailContract.View {
     @Inject
     lateinit var presenter: UserDetailContract.Presenter
 
-    val collapsingToolbarLayout: CollapsingToolbarLayout by bindView(R.id.collapsing_toolbar)
-    val recyclerView: RecyclerView by bindView(R.id.recycler_view)
+    @BindView(R.id.collapsing_toolbar) lateinit var collapsingToolbarLayout: CollapsingToolbarLayout
 
-    val ivAvatar: ImageView by bindView(R.id.iv_avatar)
+    @BindView(R.id.recycler_view) lateinit var recyclerView: RecyclerView
+
+    @BindView(R.id.iv_avatar) lateinit var ivAvatar: ImageView
 
     var tvFollowers: TextView? = null
     var tvFollowing: TextView? = null
@@ -85,6 +87,7 @@ class UserDetailActivity: BaseActivity(), UserDetailContract.View {
         userName = intent.getStringExtra(USERNAME_EXTRA)
 
         setContentView(R.layout.activity_detail)
+        ButterKnife.bind(this)
 
         recyclerView.adapter = adapter
         setupHeader()

@@ -10,12 +10,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import br.com.github.sample.Application
 import br.com.github.sample.R
-import butterknife.bindOptionalView
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 open class BaseActivity : AppCompatActivity() {
 
-    val toolbar: Toolbar? by bindOptionalView(R.id.toolbar)
+    var toolbar: Toolbar? = null
 
     internal var stopped = false
 
@@ -27,6 +26,7 @@ open class BaseActivity : AppCompatActivity() {
     override fun setContentView(layoutResID: Int) {
         super.setContentView(layoutResID)
 
+        toolbar = findViewById(R.id.toolbar) as Toolbar?
         setupToolbar()
     }
 

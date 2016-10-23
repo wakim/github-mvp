@@ -8,15 +8,18 @@ import android.widget.EditText
 import br.com.github.sample.R
 import br.com.github.sample.ui.BaseActivity
 import br.com.github.sample.util.extensions.hideSoftKeyboard
-import butterknife.bindView
+import butterknife.BindView
+import butterknife.ButterKnife
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
 class SearchActivity: BaseActivity(), SearchSubjectProvider {
 
-    val viewPager: ViewPager by bindView(R.id.vp_search)
-    val tabLayout: TabLayout by bindView(R.id.tab_layout)
-    val etSearch: EditText by bindView(R.id.et_search)
+    @BindView(R.id.vp_search) lateinit var viewPager: ViewPager
+
+    @BindView(R.id.tab_layout) lateinit var tabLayout: TabLayout
+
+    @BindView(R.id.et_search) lateinit var etSearch: EditText
 
     var query: String = ""
 
@@ -34,6 +37,7 @@ class SearchActivity: BaseActivity(), SearchSubjectProvider {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_search)
+        ButterKnife.bind(this)
 
         query = savedInstanceState?.getString("QUERY") ?: ""
 

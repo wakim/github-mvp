@@ -24,6 +24,7 @@ def final appConfig = [
                 "stetho": "1.4.1",
                 "retrofit": "2.1.0",
                 "okhttp": "3.4.1",
+                "butterknife": "8.4.0",
 
                 "junit": "4.12",
                 "hamcrest": "1.3",
@@ -231,7 +232,8 @@ dependencies {
     compile "com.google.dagger:dagger:$appConfig.versions.dagger"
     kapt "com.google.dagger:dagger-compiler:$appConfig.versions.dagger"
 
-    compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
+    compile "com.jakewharton:butterknife:$appConfig.versions.butterknife"
+    kapt "com.jakewharton:butterknife-compiler:$appConfig.versions.butterknife"
 
     compile "com.squareup.retrofit2:retrofit:$appConfig.versions.retrofit"
     compile "com.squareup.retrofit2:converter-gson:$appConfig.versions.retrofit"

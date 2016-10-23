@@ -13,7 +13,8 @@ import android.widget.TextView
 import br.com.github.sample.R
 import br.com.github.sample.data.model.SearchItem
 import br.com.github.sample.data.remote.model.NextPage
-import butterknife.bindView
+import butterknife.BindView
+import butterknife.ButterKnife
 import io.reactivex.disposables.Disposable
 
 abstract class BaseSearchFragment : Fragment() {
@@ -24,9 +25,11 @@ abstract class BaseSearchFragment : Fragment() {
     var hasMore = false
     var nextPage: NextPage? = null
 
-    val swipeRefreshLayout: SwipeRefreshLayout by bindView(R.id.swipe_refresh_layout)
-    val recyclerView: RecyclerView by bindView(R.id.recycler_view)
-    val emptyView: TextView by bindView(R.id.tv_empty_view)
+    @BindView(R.id.swipe_refresh_layout) lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
+    @BindView(R.id.recycler_view) lateinit var recyclerView: RecyclerView
+
+    @BindView(R.id.tv_empty_view) lateinit var emptyView: TextView
 
     val adapter: SearchAdapter by lazy {
         SearchAdapter(context)
@@ -61,6 +64,7 @@ abstract class BaseSearchFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.fragment_search, container, false)
+                    .apply { ButterKnife.bind(this@BaseSearchFragment, this) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupRecyclerView()

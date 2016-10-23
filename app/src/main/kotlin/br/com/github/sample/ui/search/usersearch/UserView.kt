@@ -9,20 +9,28 @@ import android.widget.TextView
 import br.com.github.sample.R
 import br.com.github.sample.data.model.UserSearch
 import br.com.github.sample.view.AbstractView
-import butterknife.bindView
+import butterknife.BindView
+import butterknife.ButterKnife
 import com.bumptech.glide.Glide
 
 class UserView : LinearLayout, AbstractView<UserSearch> {
 
     var userSearch: UserSearch? = null
 
-    val tvPersonName: TextView by bindView(R.id.tv_person_name)
-    val ivAvatar: ImageView by bindView(R.id.iv_avatar)
-    val vDivider: View by bindView(R.id.v_divider)
+    @BindView(R.id.tv_person_name) lateinit var tvPersonName: TextView
+
+    @BindView(R.id.iv_avatar) lateinit var ivAvatar: ImageView
+
+    @BindView(R.id.v_divider) lateinit var vDivider: View
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int): super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?): super(context, attrs)
     constructor(context: Context?): super(context)
+
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        ButterKnife.bind(this)
+    }
 
     override fun bind(t: UserSearch, position: Int, last: Boolean) {
         userSearch = t
