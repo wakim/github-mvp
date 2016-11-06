@@ -67,6 +67,9 @@ class UserSearchFragmentTest {
     }
 
     @Rule @JvmField
+    val screenshotRule: ScreenshotTestRule = ScreenshotTestRule()
+
+    @Rule @JvmField
     val activityRule: ActivityTestRule<SearchActivity> = ActivityTestRule(
             SearchActivity::class.java,
             true, // initialTouchMode

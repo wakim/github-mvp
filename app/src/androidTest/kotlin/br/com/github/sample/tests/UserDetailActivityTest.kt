@@ -65,6 +65,9 @@ class UserDetailActivityTest {
     }
 
     @Rule @JvmField
+    val screenshotRule: ScreenshotTestRule = ScreenshotTestRule()
+
+    @Rule @JvmField
     val activityRule: ActivityTestRule<UserDetailActivity> = ActivityTestRule(
             UserDetailActivity::class.java,
             true, // initialTouchMode
