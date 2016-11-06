@@ -34,7 +34,6 @@ import org.mockito.Mockito.*
 import java.util.*
 import javax.inject.Inject
 
-@Suppress("IllegalIdentifier")
 class UserDetailActivityTest {
 
     companion object {
@@ -103,7 +102,7 @@ class UserDetailActivityTest {
     }
 
     @Test
-    fun `should show user info`() {
+    fun shouldShowUserInfo() {
         val username = USERS_SEARCH.first().login
         val user = USERS.first()
 
@@ -119,7 +118,7 @@ class UserDetailActivityTest {
     }
 
     @Test
-    fun `should show snack when error loading user`() {
+    fun shouldShowSnackWhenErrorLoadingUser() {
         val username = USERS_SEARCH.first().login
 
         `when`(userDataSource.getUser(username))
@@ -136,7 +135,7 @@ class UserDetailActivityTest {
     }
 
     @Test
-    fun `should load after error when click SnackBar`() {
+    fun shouldLoadAfterErrorWhenClickSnackBar() {
         val username = USERS_SEARCH.first().login
         val user = USERS.first()
 
@@ -157,7 +156,7 @@ class UserDetailActivityTest {
     }
 
     @Test
-    fun `should show repositories`() {
+    fun shouldShowRepositories() {
         val username = USERS_SEARCH.first().login
         val user = USERS.first()
 
@@ -177,7 +176,7 @@ class UserDetailActivityTest {
     }
 
     @Test
-    fun `should present empty repositories`() {
+    fun shouldPresentEmptyRepositories() {
         val username = USERS_SEARCH.first().login
         val user = USERS.first()
 
@@ -200,7 +199,7 @@ class UserDetailActivityTest {
     }
 
     @Test
-    fun `should show repositories informations`() {
+    fun shouldShowRepositoriesInfo() {
         val username = USERS_SEARCH.first().login
         val user = USERS.first()
 
@@ -224,7 +223,7 @@ class UserDetailActivityTest {
     }
 
     @Test
-    fun `should save and restore instance state`() {
+    fun shouldSaveAndRestoreInstanceState() {
         val username = USERS_SEARCH.first().login
         val user = USERS.first()
 

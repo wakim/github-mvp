@@ -39,7 +39,6 @@ import org.mockito.Mockito.*
 import java.util.*
 import javax.inject.Inject
 
-@Suppress("IllegalIdentifier")
 class RepositorySearchFragmentTest {
 
     companion object {
@@ -97,7 +96,7 @@ class RepositorySearchFragmentTest {
     }
 
     @Test
-    fun `should appear hint when start`() {
+    fun shouldAppearHintWhenStart() {
         activityRule.launchActivity(Intent())
 
         onView(withId(R.id.et_search))
@@ -105,7 +104,7 @@ class RepositorySearchFragmentTest {
     }
 
     @Test
-    fun `should list repositories`() {
+    fun shouldListRepositories() {
         val query = "Teste"
 
         `when`(repositoryDataSource.search(query, null))
@@ -129,7 +128,7 @@ class RepositorySearchFragmentTest {
     }
 
     @Test
-    fun `should open browser when click on repository`() {
+    fun shouldOpenBrowserWhenClickOnRepository() {
         val query = "Teste"
 
         `when`(repositoryDataSource.search(query, null))
@@ -148,7 +147,7 @@ class RepositorySearchFragmentTest {
     }
 
     @Test
-    fun `should show empty view when no results`() {
+    fun shouldShowEmptyViewWhenNoResults() {
         val query = "Teste"
 
         `when`(repositoryDataSource.search(query, null))
@@ -171,7 +170,7 @@ class RepositorySearchFragmentTest {
     }
 
     @Test
-    fun `should load again when swipe to refresh`() {
+    fun shouldLoadAgainWhenSwipeToRefresh() {
         val query = "Teste"
 
         `when`(repositoryDataSource.search(query, null))
@@ -193,7 +192,7 @@ class RepositorySearchFragmentTest {
     }
 
     @Test
-    fun `should not update RecyclerView when swipe refresh error`() {
+    fun shouldNotUpdateRecyclerViewWhenSwipeRefreshError() {
         val query = "Teste"
 
         `when`(repositoryDataSource.search(query, null))
@@ -220,7 +219,7 @@ class RepositorySearchFragmentTest {
     }
 
     @Test
-    fun `should load next page when reach list end`() {
+    fun shouldLoadNextPageWhenReachListEnd() {
         val query = "Teste"
         val list = ArrayList(REPOSITORIES)
         val newList = ArrayList<Repository>()
@@ -256,7 +255,7 @@ class RepositorySearchFragmentTest {
     }
 
     @Test
-    fun `should save and restore instance state`() {
+    fun shouldSaveAndRestoreInstanceState() {
         val query = "Teste"
 
         `when`(repositoryDataSource.search(query, null))

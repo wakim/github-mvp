@@ -43,7 +43,6 @@ import org.mockito.Mockito.*
 import java.util.*
 import javax.inject.Inject
 
-@Suppress("IllegalIdentifier")
 class UserSearchFragmentTest {
 
     companion object {
@@ -111,7 +110,7 @@ class UserSearchFragmentTest {
     }
 
     @Test
-    fun `should appear hint when start`() {
+    fun shouldAppearHintWhenStart() {
         activityRule.launchActivity(Intent())
 
         onView(withId(R.id.et_search))
@@ -119,7 +118,7 @@ class UserSearchFragmentTest {
     }
 
     @Test
-    fun `should list users`() {
+    fun shouldListUsers() {
         val query = "Teste"
 
         `when`(userDataSource.search(query, null))
@@ -138,7 +137,7 @@ class UserSearchFragmentTest {
     }
 
     @Test
-    fun `should open detail when click on user`() {
+    fun shouldOpenDetailWhenClickOnUser() {
         val query = "Teste"
 
         `when`(userDataSource.search(query, null))
@@ -159,7 +158,7 @@ class UserSearchFragmentTest {
     }
 
     @Test
-    fun `should show empty view when no results`() {
+    fun shouldShowEmptyViewWhenNoResults() {
         val query = "Teste"
 
         `when`(userDataSource.search(query, null))
@@ -180,7 +179,7 @@ class UserSearchFragmentTest {
     }
 
     @Test
-    fun `should load again when swipe to refresh`() {
+    fun shouldLoadAgainWhenSwipeToRefresh() {
         val query = "Teste"
 
         `when`(userDataSource.search(query, null))
@@ -198,7 +197,7 @@ class UserSearchFragmentTest {
     }
 
     @Test
-    fun `should not update RecyclerView when swipe refresh error`() {
+    fun shouldNotUpdateRecyclerViewWhenSwipeRefreshError() {
         val query = "Teste"
 
         `when`(userDataSource.search(query, null))
@@ -223,7 +222,7 @@ class UserSearchFragmentTest {
     }
 
     @Test
-    fun `should load next page when reach list end`() {
+    fun shouldLoadNextPageWhenReachListEnd() {
         val query = "Teste"
         val list = ArrayList(USERS_SEARCH)
         val newList = list.concat(list).concat(list).concat(list)
@@ -252,7 +251,7 @@ class UserSearchFragmentTest {
     }
 
     @Test
-    fun `should save and restore instance state`() {
+    fun shouldSaveAndRestoreInstanceState() {
         val query = "Teste"
 
         `when`(userDataSource.search(query, null))
