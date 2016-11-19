@@ -6,8 +6,8 @@ apply plugin: 'testfairy'
 def final appId = "br.com.github.sample"
 
 def circleBuild = System.getenv("CI") == "true"
-def final preDexEnabled = "true".equals(System.getProperty("pre-dex", "true")) && !circleBuild
-def final dexInProcessEnabled = "true".equals(System.getProperty("dex-in-process", "true")) && !circleBuild
+def final preDexEnabled = "true" == System.getProperty("pre-dex", "true") && !circleBuild
+def final dexInProcessEnabled = "true" == System.getProperty("dex-in-process", "true") && !circleBuild
 def final testFairyKey = System.getenv("testfairykey")
 
 def final appConfig = [
@@ -16,7 +16,7 @@ def final appConfig = [
         "versions": [
                 "kotlin": "$kotlin_version",
                 "paper_parcel": "1.0.0",
-                "support_library": "24.2.1",
+                "support_library": "25.0.1",
                 "leak_canary": "1.5",
                 "dagger": "2.7",
                 "stetho": "1.4.1",
@@ -82,13 +82,13 @@ def generateVersionName() {
 }
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion "25.0.0"
 
     defaultConfig {
         applicationId "$appConfig.id"
         minSdkVersion 16
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 1
         versionName "0.0.0"
 
@@ -262,6 +262,7 @@ dependencies {
 
     debugCompile "com.squareup.leakcanary:leakcanary-android:$appConfig.versions.leak_canary"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$appConfig.versions.leak_canary"
+    androidTestCompile "com.squareup.leakcanary:leakcanary-android-no-op:$appConfig.versions.leak_canary"
 
     testCompile "junit:junit:$appConfig.versions.junit"
     testCompile "org.mockito:mockito-all:$appConfig.versions.mockito"
@@ -291,7 +292,8 @@ dependencies {
 }
 
 task grantAnimationPermission(type: Exec, dependsOn: 'installDevelopmentDebug') {
-    commandLine "./adb_all.sh shell pm grant $appConfig.id android.permission.SET_ANIMATION_SCALE".split(' ')
+    def adb = android.getAdbExe().toString()
+    commandLine "./adb_all.sh $adb shell pm grant $appConfig.id android.permission.SET_ANIMATION_SCALE".split(' ')
 }
 
 tasks.whenTaskAdded { task ->

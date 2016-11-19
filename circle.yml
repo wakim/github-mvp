@@ -10,7 +10,7 @@ general:
 
 dependencies:
   pre:
-    - echo y | android update sdk --no-ui --all --filter "tools,android-24,build-tools-24.0.1,platform-tools,extra-android-m2repository,extra-google-m2repository,extra-google-google_play_services"
+    - echo y | android update sdk --no-ui --all --filter "tools,android-25,build-tools-25.0.0,platform-tools,extra-android-m2repository,extra-google-m2repository,extra-google-google_play_services"
     - mkdir $ANDROID_HOME/licenses
     - cp -r ci/android-sdk-license $ANDROID_HOME/licenses/
     - cp -r ci/android-sdk-preview-license $ANDROID_HOME/licenses/
@@ -25,7 +25,7 @@ test:
     - ./gradlew :app:connectedDevelopmentDebugAndroidTest -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms1024m -Xmx1024m" -Dorg.gradle.daemon=false
 
   pre:
-    - emulator -avd circleci-android22 -no-audio -no-window:
+    - emulator -avd circleci-android23 -no-audio -no-window:
         background: true
         parallel: true
     - circle-android wait-for-boot
