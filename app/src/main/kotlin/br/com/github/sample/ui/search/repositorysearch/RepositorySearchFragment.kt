@@ -17,6 +17,12 @@ import javax.inject.Inject
 
 class RepositorySearchFragment : BaseSearchFragment(), RepositorySearchContract.View {
 
+    companion object {
+        const val RECYCLER_VIEW_TAG = "REPOSITORY_RECYCLERVIEW"
+        const val SWIPE_REFRESH_TAG = "REPOSITORY_SWIPEREFRESH"
+        const val EMPTY_VIEW_TAG = "REPOSITORY_EMPTYVIEW"
+    }
+
     @Inject
     lateinit var presenter: RepositorySearchContract.Presenter
 
@@ -35,7 +41,12 @@ class RepositorySearchFragment : BaseSearchFragment(), RepositorySearchContract.
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recyclerView.tag = "REPOSITORY_RECYCLERVIEW"
+
+        emptyView.text = getString(R.string.no_repositories_found)
+
+        recyclerView.tag = RECYCLER_VIEW_TAG
+        swipeRefreshLayout.tag = SWIPE_REFRESH_TAG
+        emptyView.tag = EMPTY_VIEW_TAG
     }
 
     override fun doSearch(query: String, nextPage: NextPage?) {

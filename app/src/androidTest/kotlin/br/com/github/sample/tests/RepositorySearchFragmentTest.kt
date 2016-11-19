@@ -27,6 +27,7 @@ import br.com.github.sample.data.remote.model.SearchNextPage
 import br.com.github.sample.data.remote.model.UserSearchResponse
 import br.com.github.sample.ui.RecyclerViewAdapter
 import br.com.github.sample.ui.search.SearchActivity
+import br.com.github.sample.ui.search.repositorysearch.RepositorySearchFragment
 import br.com.github.sample.util.*
 import io.reactivex.Observable
 import org.hamcrest.Matchers.allOf
@@ -121,10 +122,10 @@ class RepositorySearchFragmentTest {
 
         REPOSITORIES.asSequence()
                 .forEachIndexed { i, repository ->
-                    onView(allOfDisplayed(R.id.recycler_view))
+                    onView(withTag(RepositorySearchFragment.RECYCLER_VIEW_TAG))
                             .perform(scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(i))
 
-                    onView(withRecyclerViewTag("REPOSITORY_RECYCLERVIEW")
+                    onView(withRecyclerViewTag(RepositorySearchFragment.RECYCLER_VIEW_TAG)
                             .atPositionOnView(i, R.id.tv_repository_name))
                             .check(matches(withText(repository.fullName)))
                 }
@@ -143,7 +144,7 @@ class RepositorySearchFragmentTest {
 
         doSearch(query)
 
-        onView(withRecyclerViewTag("REPOSITORY_RECYCLERVIEW").atPosition(0))
+        onView(withRecyclerViewTag(RepositorySearchFragment.RECYCLER_VIEW_TAG).atPosition(0))
                 .perform(click())
 
         intended(hasAction(Intent.ACTION_VIEW))
@@ -162,11 +163,11 @@ class RepositorySearchFragmentTest {
 
         doSearch(query)
 
-        onView(withTag("REPOSITORY_RECYCLERVIEW"))
+        onView(withTag(RepositorySearchFragment.RECYCLER_VIEW_TAG))
                 .check(recyclerViewAdapterCount(0))
 
-        onView(allOfDisplayed(R.id.tv_empty_view))
-                .check(matches(allOf(isDisplayed(), withText(R.string.no_users_found))))
+        onView(withTag(RepositorySearchFragment.EMPTY_VIEW_TAG))
+                .check(matches(allOf(isDisplayed(), withText(R.string.no_repositories_found))))
 
         verify(repositoryDataSource).search(query, null)
         verifyNoMoreInteractions(repositoryDataSource)
@@ -185,9 +186,10 @@ class RepositorySearchFragmentTest {
 
         doSearch(query)
 
-        onView(allOfDisplayed(R.id.recycler_view))
+        onView(withTag(RepositorySearchFragment.RECYCLER_VIEW_TAG))
                 .check(recyclerViewAdapterCount(REPOSITORIES.size))
-        onView(allOfDisplayed(R.id.swipe_refresh_layout))
+
+        onView(withTag(RepositorySearchFragment.SWIPE_REFRESH_TAG))
                 .perform(swipeDown())
 
         verify(repositoryDataSource, times(2)).search(query, null)
@@ -208,10 +210,10 @@ class RepositorySearchFragmentTest {
 
         doSearch(query)
 
-        onView(allOfDisplayed(R.id.recycler_view))
+        onView(withTag(RepositorySearchFragment.RECYCLER_VIEW_TAG))
                 .check(recyclerViewAdapterCount(REPOSITORIES.size))
 
-        onView(allOfDisplayed(R.id.swipe_refresh_layout))
+        onView(withTag(RepositorySearchFragment.SWIPE_REFRESH_TAG))
                 .perform(swipeDown())
 
         onView(withId(R.id.snackbar_text))
@@ -245,10 +247,10 @@ class RepositorySearchFragmentTest {
 
         doSearch(query)
 
-        onView(allOfDisplayed(R.id.recycler_view))
+        onView(withTag(RepositorySearchFragment.RECYCLER_VIEW_TAG))
                 .perform(scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(newList.size - 1))
 
-        onView(allOfDisplayed(R.id.recycler_view))
+        onView(withTag(RepositorySearchFragment.RECYCLER_VIEW_TAG))
                 .check(recyclerViewAdapterCount(newList.size + list.size))
 
         verify(repositoryDataSource).search(query, null)
@@ -270,12 +272,12 @@ class RepositorySearchFragmentTest {
 
         doSearch(query)
 
-        onView(allOfDisplayed(R.id.recycler_view))
+        onView(withTag(RepositorySearchFragment.RECYCLER_VIEW_TAG))
                 .check(recyclerViewAdapterCount(REPOSITORIES.size))
 
         activityRule.activity.rotateScreen()
 
-        onView(allOfDisplayed(R.id.recycler_view))
+        onView(withTag(RepositorySearchFragment.RECYCLER_VIEW_TAG))
                 .check(recyclerViewAdapterCount(REPOSITORIES.size))
 
         onView(allOfDisplayed(R.id.et_search))

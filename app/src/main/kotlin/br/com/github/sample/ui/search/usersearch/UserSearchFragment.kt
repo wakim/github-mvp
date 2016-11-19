@@ -18,6 +18,12 @@ import javax.inject.Inject
 
 class UserSearchFragment : BaseSearchFragment(), UserSearchContract.View {
 
+    companion object {
+        const val RECYCLER_VIEW_TAG = "USER_RECYCLERVIEW"
+        const val SWIPE_REFRESH_TAG = "USER_SWIPEREFRESH"
+        const val EMPTY_VIEW_TAG = "USER_EMPTYVIEW"
+    }
+
     @Inject
     lateinit var presenter: UserSearchContract.Presenter
 
@@ -40,7 +46,10 @@ class UserSearchFragment : BaseSearchFragment(), UserSearchContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recyclerView.tag = "USER_RECYCLERVIEW"
+
+        recyclerView.tag = RECYCLER_VIEW_TAG
+        swipeRefreshLayout.tag = SWIPE_REFRESH_TAG
+        emptyView.tag = EMPTY_VIEW_TAG
     }
 
     override fun doSearch(query: String, nextPage: NextPage?) {

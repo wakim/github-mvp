@@ -30,6 +30,7 @@ import br.com.github.sample.data.remote.model.UserRepositoriesResponse
 import br.com.github.sample.data.remote.model.UserSearchResponse
 import br.com.github.sample.ui.RecyclerViewAdapter
 import br.com.github.sample.ui.search.SearchActivity
+import br.com.github.sample.ui.search.usersearch.UserSearchFragment
 import br.com.github.sample.ui.userdetail.UserDetailActivity
 import br.com.github.sample.util.*
 import io.reactivex.Observable
@@ -133,7 +134,7 @@ class UserSearchFragmentTest {
 
         USERS_SEARCH.asSequence()
                 .forEachIndexed { i, userSearch ->
-                    onView(withRecyclerViewTag("USER_RECYCLERVIEW")
+                    onView(withRecyclerViewTag(UserSearchFragment.RECYCLER_VIEW_TAG)
                             .atPositionOnView(i, R.id.tv_person_name))
                             .check(matches(withText(userSearch.login)))
                 }
@@ -153,7 +154,7 @@ class UserSearchFragmentTest {
 
         doSearch(query)
 
-        onView(withRecyclerViewTag("USER_RECYCLERVIEW")
+        onView(withRecyclerViewTag(UserSearchFragment.RECYCLER_VIEW_TAG)
                 .atPosition(0))
                 .perform(click())
 
@@ -171,10 +172,10 @@ class UserSearchFragmentTest {
 
         doSearch(query)
 
-        onView(withTag("USER_RECYCLERVIEW"))
+        onView(withTag(UserSearchFragment.RECYCLER_VIEW_TAG))
                 .check(recyclerViewAdapterCount(0))
 
-        onView(allOfDisplayed(R.id.tv_empty_view))
+        onView(withTag(UserSearchFragment.EMPTY_VIEW_TAG))
                 .check(matches(allOf(isDisplayed(), withText(R.string.no_users_found))))
 
         verify(userDataSource).search(query, null)
@@ -192,8 +193,8 @@ class UserSearchFragmentTest {
 
         doSearch(query)
 
-        onView(allOfDisplayed(R.id.recycler_view)).check(recyclerViewAdapterCount(USERS_SEARCH.size))
-        onView(allOfDisplayed(R.id.swipe_refresh_layout)).perform(swipeDown())
+        onView(withTag(UserSearchFragment.RECYCLER_VIEW_TAG)).check(recyclerViewAdapterCount(USERS_SEARCH.size))
+        onView(withTag(UserSearchFragment.SWIPE_REFRESH_TAG)).perform(swipeDown())
 
         verify(userDataSource, times(2)).search(query, null)
         verifyNoMoreInteractions(userDataSource)
@@ -211,10 +212,10 @@ class UserSearchFragmentTest {
 
         doSearch(query)
 
-        onView(allOfDisplayed(R.id.recycler_view))
+        onView(withTag(UserSearchFragment.RECYCLER_VIEW_TAG))
                 .check(recyclerViewAdapterCount(USERS_SEARCH.size))
 
-        onView(allOfDisplayed(R.id.swipe_refresh_layout))
+        onView(withTag(UserSearchFragment.SWIPE_REFRESH_TAG))
                 .perform(swipeDown())
 
         onView(withId(R.id.snackbar_text))
@@ -241,10 +242,10 @@ class UserSearchFragmentTest {
 
         doSearch(query)
 
-        onView(allOfDisplayed(R.id.recycler_view))
+        onView(withTag(UserSearchFragment.RECYCLER_VIEW_TAG))
                 .perform(scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(newList.size - 1))
 
-        onView(allOfDisplayed(R.id.recycler_view))
+        onView(withTag(UserSearchFragment.RECYCLER_VIEW_TAG))
                 .check(recyclerViewAdapterCount(newList.size + list.size))
 
         verify(userDataSource).search(query, null)
@@ -264,12 +265,12 @@ class UserSearchFragmentTest {
 
         doSearch(query)
 
-        onView(allOfDisplayed(R.id.recycler_view))
+        onView(withTag(UserSearchFragment.RECYCLER_VIEW_TAG))
                 .check(recyclerViewAdapterCount(USERS_SEARCH.size))
 
         activityRule.activity.rotateScreen()
 
-        onView(allOfDisplayed(R.id.recycler_view))
+        onView(withTag(UserSearchFragment.RECYCLER_VIEW_TAG))
                 .check(recyclerViewAdapterCount(USERS_SEARCH.size))
 
         onView(withId(R.id.et_search))
