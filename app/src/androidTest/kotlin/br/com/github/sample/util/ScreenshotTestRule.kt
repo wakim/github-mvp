@@ -22,7 +22,7 @@ class ScreenshotTestRule : TestRule {
             override fun evaluate() {
                 Espresso.setFailureHandler { throwable, matcher ->
                     InstrumentationRegistry.getInstrumentation().getCurrentResumedActivity {
-                        FalconSpoon.screenshot(it, description.toString(), description.className, description.methodName)
+                        FalconSpoon.screenshot(it, description.toString().replace("[.()]".toRegex(), "_"), description.className, description.methodName)
                         DefaultFailureHandler(InstrumentationRegistry.getContext()).handle(throwable, matcher)
                     }
                 }
