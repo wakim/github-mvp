@@ -1,0 +1,72 @@
+# Customise this file, documentation can be found here:
+# https://github.com/fastlane/fastlane/tree/master/fastlane/docs
+# All available actions: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Actions.md
+# can also be listed using the `fastlane actions` command
+
+# Change the syntax highlighting to Ruby
+# All lines starting with a # are ignored when running `fastlane`
+
+# If you want to automatically update fastlane if a new version is available:
+# update_fastlane
+
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+fastlane_version "1.110.0"
+
+default_platform :android
+
+platform :android do
+  before_all do
+    # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
+  end
+
+  desc "Run all unit tests"
+  lane :unit_tests do |options|
+    gradle(task: ":app:testDevelopmentDebugUnitTest #{options[:gradle_flags]}")
+  end
+
+  desc "Run all instrumentation tests on current emulator/device"
+  lane :instrumentation_tests do |options|
+    gradle(task: ":app:connectedDevelopmentDebugAndroidTest #{options[:gradle_flags]}")
+  end
+
+  desc "Run all tests"
+  lane :tests do |options|
+    unit_tests(options)
+    instrumentation_tests(options)
+  end
+
+  desc "Submit a new Build to TestFairy via Gradle Plugin"
+  lane :testfairy_build do |options|
+    gradle(task: "testfairy#{options[:flavor]} #{options[:gradle_flags]}")
+  end
+
+  desc "Perform all tasks for continuous integration for production release"
+  lane :production_release do |options|
+    testfairy_build(options.merge({:flavor => "ProductionRelease"}))
+  end
+
+  # You can define as many lanes as you want
+
+  after_all do |lane|
+    # This block is called, only if the executed lane was successful
+
+    # slack(
+    #   message: "Successfully deployed new App Update."
+    # )
+  end
+
+  error do |lane, exception|
+    # slack(
+    #   message: exception.message,
+    #   success: false
+    # )
+  end
+end
+
+
+# More information about multiple platforms in fastlane: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Platforms.md
+# All available actions: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Actions.md
+
+# fastlane reports which actions are used
+# No personal data is sent or shared. Learn more at https://github.com/fastlane/enhancer

@@ -1,0 +1,4 @@
+mkdir $ANDROID_HOME/licenses
+cp -r ci/android-sdk-license $ANDROID_HOME/licenses/
+cp -r ci/android-sdk-preview-license $ANDROID_HOME/licenses/
+cp -r ci/repositories.cfg /home/ubuntu/.android/

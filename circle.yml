@@ -1,4 +1,6 @@
 machine:
+  ruby:
+    version: ruby-2.3.1
   java:
     version: openjdk8
 
@@ -10,40 +12,29 @@ general:
 
 dependencies:
   pre:
+    - gem install fastlane
     - echo y | android update sdk --no-ui --all --filter "tools,android-25,build-tools-25.0.0,platform-tools,extra-android-m2repository,extra-google-m2repository,extra-google-google_play_services"
-    - mkdir $ANDROID_HOME/licenses
-    - cp -r ci/android-sdk-license $ANDROID_HOME/licenses/
-    - cp -r ci/android-sdk-preview-license $ANDROID_HOME/licenses/
-    - cp -r ci/repositories.cfg /home/ubuntu/.android/
+    - ./ci/export_licenses
 
   override:
     - ./gradlew dependencies
 
 test:
   override:
-    - ./gradlew :app:testDevelopmentDebugUnitTest -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms1024m -Xmx1024m" -Dorg.gradle.daemon=false
-    - ./gradlew :app:connectedDevelopmentDebugAndroidTest -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms1024m -Xmx1024m" -Dorg.gradle.daemon=false
+    - fastlane tests gradle_flags:"-Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs=\"-Xms1024m -Xmx1024m\" -Dorg.gradle.daemon=false"
 
   pre:
-    - emulator -avd circleci-android23 -no-audio -no-window:
+    - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
         parallel: true
     - circle-android wait-for-boot
-    - fb-adb shell settings put global window_animation_scale 0
-    - fb-adb shell settings put global transition_animation_scale 0
-    - fb-adb shell settings put global animator_duration_scale 0
-    - fb-adb shell input keyevent 82
+    - ./ci/disable_animations
 
   post:
-    - mkdir $CIRCLE_TEST_REPORTS/instrumentation_tests
-    - mkdir $CIRCLE_TEST_REPORTS/unit_tests
-    - cp -r app/build/test-results/developmentDebug/* $CIRCLE_TEST_REPORTS/unit_tests
-    - cp -r app/build/reports/tests/developmentDebug/* $CIRCLE_TEST_REPORTS/unit_tests
-    - cp -r app/build/reports/androidTests/connected/flavors/DEVELOPMENT/* $CIRCLE_TEST_REPORTS/instrumentation_tests
+    - ./ci/export_test_reports
+
 deployment:
   master:
       branch: master
       commands:
-        - ./gradlew testfairyProductionRelease -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms1024m -Xmx1024m" -Dorg.gradle.daemon=false
-        - git describe --tags --abbrev=0 || echo "0.0"
-        - git rev-list --count HEAD || echo "0"
+        - fastlane production_release gradle_flags:"-Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs=\"-Xms1024m -Xmx1024m\" -Dorg.gradle.daemon=false"
