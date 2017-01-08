@@ -15,15 +15,16 @@ def final appConfig = [
 
         "versions": [
                 "kotlin": "$kotlin_version",
-                "paper_parcel": "1.0.0",
-                "support_library": "25.0.1",
+                "paper_parcel": "1.0.1",
+                "support_library": "25.1.0",
                 "leak_canary": "1.5",
-                "dagger": "2.7",
-                "stetho": "1.4.1",
+                "dagger": "2.8",
+                "stetho": "1.4.2",
                 "retrofit": "2.1.0",
-                "okhttp": "3.4.1",
+                "okhttp": "3.5.0",
                 "butterknife": "8.4.0",
-                "rxjava": "2.0.0",
+                "rxjava": "2.0.1",
+                "epoxy": "1.5.0",
 
                 "junit": "4.12",
                 "hamcrest": "1.3",
@@ -83,7 +84,7 @@ def generateVersionName() {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         applicationId "$appConfig.id"
@@ -182,6 +183,7 @@ android {
 
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
+        pickFirst  'META-INF/LICENSE'
     }
 
     testOptions.unitTests.all {
@@ -226,7 +228,7 @@ dependencies {
     compile "com.android.support:design:$appConfig.versions.support_library"
     compile "com.android.support:cardview-v7:$appConfig.versions.support_library"
     compile "com.android.support:recyclerview-v7:$appConfig.versions.support_library"
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
 
     compile "com.google.dagger:dagger:$appConfig.versions.dagger"
     kapt "com.google.dagger:dagger-compiler:$appConfig.versions.dagger"
@@ -257,6 +259,9 @@ dependencies {
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     compile 'de.hdodenhof:circleimageview:2.1.0'
 
+    compile "com.airbnb.android:epoxy:$appConfig.versions.epoxy"
+    kapt "com.airbnb.android:epoxy-processor:$appConfig.versions.epoxy"
+
     debugCompile "com.facebook.stetho:stetho:$appConfig.versions.stetho"
     debugCompile "com.facebook.stetho:stetho-okhttp3:$appConfig.versions.stetho"
 
@@ -265,8 +270,12 @@ dependencies {
     androidTestCompile "com.squareup.leakcanary:leakcanary-android-no-op:$appConfig.versions.leak_canary"
 
     testCompile "junit:junit:$appConfig.versions.junit"
-    testCompile "org.mockito:mockito-all:$appConfig.versions.mockito"
+    testCompile "org.mockito:mockito-core:$appConfig.versions.mockito"
+
     testCompile "org.hamcrest:hamcrest-all:$appConfig.versions.hamcrest"
+
+    androidTestCompile "junit:junit:$appConfig.versions.junit"
+    androidTestCompile "org.mockito:mockito-core:$appConfig.versions.mockito"
 
     androidTestCompile ("com.android.support.test:runner:$appConfig.versions.runner") {
         exclude module: "support-annotations"
@@ -296,9 +305,15 @@ task grantAnimationPermission(type: Exec, dependsOn: 'installDevelopmentDebug') 
     commandLine "./adb_all.sh $adb shell pm grant $appConfig.id android.permission.SET_ANIMATION_SCALE".split(' ')
 }
 
+task grantExternalStoragePermission(type: Exec, dependsOn: 'installDevelopmentDebug') {
+    def adb = android.getAdbExe().toString()
+    commandLine "./adb_all.sh $adb shell pm grant $appConfig.id android.permission.WRITE_EXTERNAL_STORAGE".split(' ')
+}
+
 tasks.whenTaskAdded { task ->
     if (task.name.startsWith('connected')) {
         task.dependsOn grantAnimationPermission
+        task.dependsOn grantExternalStoragePermission
     }
 }
 
