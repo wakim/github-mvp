@@ -26,13 +26,13 @@ class UserDetailPresenter(private val view: UserDetailContract.View,
                 .doOnComplete { view.showLoadingIndicator(false) }
                 .subscribe (
                         {
-                            view.showUser(it.first)
-
                             if (it.second.items.isEmpty()) {
                                 view.showEmptyRepositories()
                             } else {
                                 view.showRepositories(it.second.items, it.second.nextPage)
                             }
+
+                            view.showUser(it.first)
                         },
                         { e -> view.errorLoadingUser() }
                 )

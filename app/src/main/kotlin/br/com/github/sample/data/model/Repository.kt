@@ -6,6 +6,7 @@ import nz.bradcampbell.paperparcel.PaperParcelable
 
 @PaperParcel
 data class Repository(val name: String?,
+                      val id: Long,
                       @SerializedName("full_name") val fullName: String?,
                       val description: String?,
                       @SerializedName("html_url") val htmlUrl: String?,

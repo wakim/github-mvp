@@ -24,11 +24,11 @@ class UserDetailPresenterTest {
         val imageUrl = "http://www.nitwaa.in/media//1/profile_pictures/raghavender-mittapalli/raghavender-mittapalli-present.png"
 
         val USERS: List<User> = Collections.unmodifiableList(listOf(
-                User("Sample 1", "sample1", imageUrl, "Company 1", "https://www.google.com", "Rio de Janeiro",
+                User("Sample 1", "sample1", 1, imageUrl, "Company 1", "https://www.google.com", "Rio de Janeiro",
                         "1@sample.com", false, "User Sample 1", 10, 10, 10, 10, Date(), Date()),
-                User("Sample 2", "sample2", imageUrl, "Company 2", "https://www.google.com", "Rio de Janeiro",
+                User("Sample 2", "sample2", 2, imageUrl, "Company 2", "https://www.google.com", "Rio de Janeiro",
                         "2@sample.com", false, "User Sample 2", 10, 10, 10, 10, Date(), Date()),
-                User("Sample 3", "sample3", imageUrl, "Company 3", "https://www.google.com", "Rio de Janeiro",
+                User("Sample 3", "sample3", 3, imageUrl, "Company 3", "https://www.google.com", "Rio de Janeiro",
                         "3@sample.com", false, "User Sample 3", 10, 10, 10, 10, Date(), Date())
         ))
     }

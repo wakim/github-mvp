@@ -96,7 +96,7 @@ open class BaseActivity : AppCompatActivity() {
         super.onStop()
     }
 
-    protected fun snack(@StringRes messageResId: Int, @Snackbar.Duration duration: Int): Snackbar {
+    protected fun snack(@StringRes messageResId: Int, duration: Int): Snackbar {
         val view = if (coordinatorLayout == null) findViewById(android.R.id.content) else coordinatorLayout
 
         return Snackbar.make(view!!, messageResId, duration).apply { show() }

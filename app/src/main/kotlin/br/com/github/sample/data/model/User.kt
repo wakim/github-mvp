@@ -8,6 +8,7 @@ import java.util.*
 @PaperParcel
 data class User(val name: String?,
                 val login: String?,
+                val id: Long,
                 @SerializedName("avatar_url") val avatarUrl: String?,
                 val company: String?,
                 val blog: String?,

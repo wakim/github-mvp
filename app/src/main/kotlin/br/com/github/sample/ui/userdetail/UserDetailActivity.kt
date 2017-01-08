@@ -5,7 +5,6 @@ import android.support.design.widget.CollapsingToolbarLayout
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.RecyclerView
 import android.widget.ImageView
-import android.widget.TextView
 import br.com.github.sample.R
 import br.com.github.sample.dagger.Injector
 import br.com.github.sample.data.model.Repository
@@ -13,9 +12,7 @@ import br.com.github.sample.data.model.User
 import br.com.github.sample.data.remote.model.NextPage
 import br.com.github.sample.ui.BaseActivity
 import br.com.github.sample.ui.PresenterModule
-import br.com.github.sample.ui.RecyclerViewAdapter
 import br.com.github.sample.ui.UIComponent
-import br.com.github.sample.ui.search.repositorysearch.RepositoryView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.bumptech.glide.Glide
@@ -44,36 +41,21 @@ class UserDetailActivity: BaseActivity(), UserDetailContract.View {
 
     @BindView(R.id.iv_avatar) lateinit var ivAvatar: ImageView
 
-    var tvFollowers: TextView? = null
-    var tvFollowing: TextView? = null
-    var tvPublicRepos: TextView? = null
-    var tvPublicGists: TextView? = null
-    var tvBio: TextView? = null
-    var tvEmail: TextView? = null
-    var tvBlog: TextView? = null
-    var tvLocation: TextView? = null
-    var tvHireable: TextView? = null
-    var tvRepositoriesHeader: TextView? = null
-
     var userName: String = ""
 
     var user: User? = null
     var repositories: List<Repository>? = null
     var nextPage: NextPage? = null
 
-    val adapter: RecyclerViewAdapter<Repository, RepositoryView> by lazy {
-        RecyclerViewAdapter<Repository, RepositoryView>(this)
-                .apply {
-                    layoutResId = R.layout.list_item_repository
-                }
-    }
+    val adapter: UserDetailAdapter = UserDetailAdapter()
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
 
         outState?.let {
-            it.putParcelable(ITEMS_EXTRA, adapter.onSaveInstanceState())
+            adapter.onSaveInstanceState(it)
             it.putParcelable(ITEM_EXTRA, user)
+            it.putParcelableArrayList(ITEMS_EXTRA, adapter.items)
             it.putParcelable(NEXT_PAGE_EXTRA, nextPage)
         }
     }
@@ -90,32 +72,15 @@ class UserDetailActivity: BaseActivity(), UserDetailContract.View {
         ButterKnife.bind(this)
 
         recyclerView.adapter = adapter
-        setupHeader()
 
         savedInstanceState?.let {
             user = it.getParcelable(ITEM_EXTRA)
             nextPage = it.getParcelable(NEXT_PAGE_EXTRA)
-            adapter.onRestoreState(it.getParcelable(ITEMS_EXTRA))
+            adapter.onRestoreInstanceState(it)
 
             showUser(user!!)
+            showRepositories(it.getParcelableArrayList(ITEMS_EXTRA), nextPage)
         } ?: presenter.showUser(userName)
-    }
-
-    fun setupHeader() {
-        val header = layoutInflater.inflate(R.layout.content_detail, recyclerView, false)
-
-        tvFollowers = header.findViewById(R.id.tv_followers) as TextView
-        tvFollowing = header.findViewById(R.id.tv_following) as TextView
-        tvPublicRepos = header.findViewById(R.id.tv_public_repos) as TextView
-        tvPublicGists = header.findViewById(R.id.tv_public_gists) as TextView
-        tvBio = header.findViewById(R.id.tv_bio) as TextView
-        tvBlog = header.findViewById(R.id.tv_blog) as TextView
-        tvEmail = header.findViewById(R.id.tv_email) as TextView
-        tvLocation = header.findViewById(R.id.tv_location) as TextView
-        tvHireable = header.findViewById(R.id.tv_hireable) as TextView
-        tvRepositoriesHeader = header.findViewById(R.id.tv_repositories_header) as TextView
-
-        adapter.header = header
     }
 
     override fun errorLoadingUser() {
@@ -125,7 +90,7 @@ class UserDetailActivity: BaseActivity(), UserDetailContract.View {
     }
 
     override fun showEmptyRepositories() {
-        tvRepositoriesHeader?.text = getString(R.string.no_repositories_found)
+        adapter.showEmptyRepositories()
     }
 
     override fun showLoadingIndicator(active: Boolean) {
@@ -150,19 +115,9 @@ class UserDetailActivity: BaseActivity(), UserDetailContract.View {
                     .bitmapTransform(CenterCrop(context), FitCenter(context))
                     .into(ivAvatar)
 
-            tvBio!!.text = bio
+            adapter.setUser(user)
 
-            tvFollowers!!.text = getString(R.string.followers, followers)
-            tvFollowing!!.text = getString(R.string.following, following)
-
-            tvPublicRepos!!.text = getString(R.string.public_repos, publicRepos)
-            tvPublicGists!!.text = getString(R.string.public_gists, publicGists)
-
-            tvEmail!!.text = email
-            tvBlog!!.text = blog
-
-            tvLocation!!.text = location
-            tvHireable!!.text = if (hireable) "✓" else "×"
+            recyclerView.scrollToPosition(0)
         }
     }
 }

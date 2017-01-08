@@ -10,6 +10,6 @@ fun newUserSearchList(count: Int) =
 
 fun newRepositoryList(count: Int) =
         (0..count).map { number ->
-            Repository("repository$number", "Repository $number", "Description of Repository $number",
+            Repository("repository$number", number.toLong(), "Repository $number", "Description of Repository $number",
                     "url$number", number, number, number, number, "Android")
         }.toList()

@@ -44,10 +44,10 @@ class RepositorySearchFragmentTest {
 
     companion object {
         val REPOSITORIES: List<Repository> = Collections.unmodifiableList(listOf(
-                Repository("Repository 1", "sample/repository 1", "Sample Repository 1",
+                Repository("Repository 1", 1, "sample/repository 1", "Sample Repository 1",
                         "https://www.github.com/sample/repository1", 100, 100, 100, 0, "Kotlin"
                 ),
-                Repository("Repository 2", "sample/repository2", "Sample Repository 2",
+                Repository("Repository 2", 2, "sample/repository2", "Sample Repository 2",
                         "https://www.github.com/sample/repository2", 100, 100, 100, 0, "Kotlin"
                 )
         ))

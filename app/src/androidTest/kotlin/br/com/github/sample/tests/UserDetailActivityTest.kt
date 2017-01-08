@@ -21,9 +21,9 @@ import br.com.github.sample.data.model.Repository
 import br.com.github.sample.data.model.User
 import br.com.github.sample.data.model.UserSearch
 import br.com.github.sample.data.remote.model.UserRepositoriesResponse
-import br.com.github.sample.ui.RecyclerViewAdapter
 import br.com.github.sample.ui.userdetail.UserDetailActivity
 import br.com.github.sample.util.*
+import com.airbnb.epoxy.EpoxyViewHolder
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 import org.junit.After
@@ -46,19 +46,19 @@ class UserDetailActivityTest {
         ))
 
         val USERS: List<User> = Collections.unmodifiableList(listOf(
-                User("Sample 1", "sample1", imageUrl, "Company 1", "https://www.google.com", "Rio de Janeiro",
+                User("Sample 1", "sample1", 1, imageUrl, "Company 1", "https://www.google.com", "Rio de Janeiro",
                         "1@sample.com", false, "User Sample 1", 10, 10, 10, 10, Date(), Date()),
-                User("Sample 2", "sample2", imageUrl, "Company 2", "https://www.google.com", "Rio de Janeiro",
+                User("Sample 2", "sample2", 2, imageUrl, "Company 2", "https://www.google.com", "Rio de Janeiro",
                         "2@sample.com", false, "User Sample 2", 10, 10, 10, 10, Date(), Date()),
-                User("Sample 3", "sample3", imageUrl, "Company 3", "https://www.google.com", "Rio de Janeiro",
+                User("Sample 3", "sample3", 3, imageUrl, "Company 3", "https://www.google.com", "Rio de Janeiro",
                         "3@sample.com", false, "User Sample 3", 10, 10, 10, 10, Date(), Date())
         ))
 
         val REPOSITORIES: List<Repository> = Collections.unmodifiableList(listOf(
-                Repository("Repository 1", "sample/repository 1", "Sample Repository 1",
+                Repository("Repository 1", 1, "sample/repository 1", "Sample Repository 1",
                         "https://www.github.com/sample/repository1", 100, 100, 100, 0, "Kotlin"
                 ),
-                Repository("Repository 2", "sample/repository2", "Sample Repository 2",
+                Repository("Repository 2", 2, "sample/repository2", "Sample Repository 2",
                         "https://www.github.com/sample/repository2", 100, 100, 100, 0, "Kotlin"
                 )
         ))
@@ -171,7 +171,7 @@ class UserDetailActivityTest {
         verifyUser(user)
 
         onView(withId(R.id.recycler_view))
-                .check(recyclerViewAdapterCount(REPOSITORIES.size + 1))
+                .check(recyclerViewAdapterCount(REPOSITORIES.size + 2))
 
         verify(userDataSource).getUser(username)
 
@@ -191,7 +191,7 @@ class UserDetailActivityTest {
         verifyUser(user)
 
         onView(withId(R.id.recycler_view))
-                .check(recyclerViewAdapterCount(1))
+                .check(recyclerViewAdapterCount(2))
 
         onView(withRecyclerViewId(R.id.recycler_view).atPositionOnView(0, R.id.tv_repositories_header))
                 .check(matches(withText(R.string.no_repositories_found)))
@@ -214,7 +214,7 @@ class UserDetailActivityTest {
         REPOSITORIES.asSequence()
                 .forEachIndexed { i, repository ->
                     onView(withId(R.id.recycler_view))
-                            .perform(scrollToPosition<RecyclerViewAdapter.RecyclerViewHolder<*>>(i + 1))
+                            .perform(scrollToPosition<EpoxyViewHolder>(i + 1))
 
                     onView(withRecyclerViewId(R.id.recycler_view).atPositionOnView(i + 1, R.id.tv_repository_name))
                             .check(matches(withText(repository.fullName)))
@@ -238,7 +238,7 @@ class UserDetailActivityTest {
         activityRule.activity.rotateScreen()
 
         onView(withId(R.id.recycler_view))
-                .check(recyclerViewAdapterCount(REPOSITORIES.size + 1))
+                .check(recyclerViewAdapterCount(REPOSITORIES.size + 2))
 
         verify(userDataSource).getUser(username)
 
