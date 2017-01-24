@@ -3,9 +3,7 @@ package br.com.github.sample.dagger
 import android.content.Context
 import br.com.github.sample.ui.UIComponent
 
-abstract class Injector {
-
-    private constructor()
+abstract class Injector private constructor() {
 
     init {
         throw AssertionError("No instances.")

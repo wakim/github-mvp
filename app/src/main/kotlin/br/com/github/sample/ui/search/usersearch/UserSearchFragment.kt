@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.View
+import br.com.github.sample.Application
 import br.com.github.sample.R
 import br.com.github.sample.dagger.Injector
 import br.com.github.sample.data.model.SearchItem
@@ -29,8 +30,36 @@ class UserSearchFragment : BaseSearchFragment(), UserSearchContract.View {
 
     lateinit var uiComponent: UIComponent
 
+    var componentId = Application.id
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        presenter.detachView()
+
+        if (activity.isFinishing) {
+            presenter.unsubscribe()
+            Application.uiComponentsMap.remove(componentId)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+
+        outState?.apply {
+            putInt("COMPONENT_ID", componentId)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        uiComponent = Injector.obtainAppComponent(context) + PresenterModule(this)
+        savedInstanceState?.let {
+            componentId = it.getInt("COMPONENT_ID")
+        }
+
+        uiComponent = Application.uiComponentsMap.getOrPut(componentId, {
+            Injector.obtainAppComponent(context) + PresenterModule()
+        })
+
         uiComponent.inject(this)
 
         super.onCreate(savedInstanceState)
@@ -50,6 +79,8 @@ class UserSearchFragment : BaseSearchFragment(), UserSearchContract.View {
         recyclerView.tag = RECYCLER_VIEW_TAG
         swipeRefreshLayout.tag = SWIPE_REFRESH_TAG
         emptyView.tag = EMPTY_VIEW_TAG
+
+        presenter.attachView(this)
     }
 
     override fun doSearch(query: String, nextPage: NextPage?) {

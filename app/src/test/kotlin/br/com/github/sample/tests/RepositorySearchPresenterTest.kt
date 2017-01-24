@@ -25,7 +25,7 @@ class RepositorySearchPresenterTest {
     var view: RepositorySearchContract.View = mock()
     var dataSource: RepositoryDataSource = mock()
 
-    var presenter: RepositorySearchPresenter = RepositorySearchPresenter(view, schedulerProvider, dataSource)
+    var presenter: RepositorySearchPresenter = RepositorySearchPresenter(schedulerProvider, dataSource)
 
     fun verifyLoading() {
         verify(view).showLoadingIndicator(true)
@@ -37,7 +37,9 @@ class RepositorySearchPresenterTest {
         dataSource = mock()
         view = mock()
 
-        presenter = RepositorySearchPresenter(view, schedulerProvider, dataSource)
+        presenter = RepositorySearchPresenter(schedulerProvider, dataSource)
+
+        presenter.attachView(view)
     }
 
     @Test

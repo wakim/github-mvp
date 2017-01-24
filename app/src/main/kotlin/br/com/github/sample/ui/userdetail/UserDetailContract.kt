@@ -21,5 +21,7 @@ interface UserDetailContract {
 
     interface Presenter : BasePresenter {
         fun showUser(username: String)
+        fun attachView(view: UserDetailContract.View)
+        fun detachView()
     }
 }

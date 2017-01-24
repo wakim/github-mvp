@@ -38,7 +38,7 @@ class UserDetailPresenterTest {
     var view: UserDetailContract.View = mock()
     var dataSource: UserDataSource = mock()
 
-    var presenter: UserDetailPresenter = UserDetailPresenter(view, schedulerProvider, dataSource)
+    var presenter: UserDetailPresenter = UserDetailPresenter(schedulerProvider, dataSource)
 
     fun verifyLoading() {
         verify(view).showLoadingIndicator(true)
@@ -50,7 +50,9 @@ class UserDetailPresenterTest {
         dataSource = mock()
         view = mock()
 
-        presenter = UserDetailPresenter(view, schedulerProvider, dataSource)
+        presenter = UserDetailPresenter(schedulerProvider, dataSource)
+
+        presenter.attachView(view)
     }
 
     @Test

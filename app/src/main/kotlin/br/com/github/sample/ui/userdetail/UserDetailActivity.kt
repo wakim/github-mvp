@@ -5,6 +5,7 @@ import android.support.design.widget.CollapsingToolbarLayout
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.RecyclerView
 import android.widget.ImageView
+import br.com.github.sample.Application
 import br.com.github.sample.R
 import br.com.github.sample.dagger.Injector
 import br.com.github.sample.data.model.Repository
@@ -52,16 +53,38 @@ class UserDetailActivity: BaseActivity(), UserDetailContract.View {
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
 
-        outState?.let {
-            adapter.onSaveInstanceState(it)
-            it.putParcelable(ITEM_EXTRA, user)
-            it.putParcelableArrayList(ITEMS_EXTRA, adapter.items)
-            it.putParcelable(NEXT_PAGE_EXTRA, nextPage)
+        outState?.apply {
+            adapter.onSaveInstanceState(this)
+
+            putParcelable(ITEM_EXTRA, user)
+            putParcelableArrayList(ITEMS_EXTRA, adapter.items)
+            putParcelable(NEXT_PAGE_EXTRA, nextPage)
+            putInt("COMPONENT_ID", componentId)
+        }
+    }
+
+    var componentId = Application.id
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        presenter.detachView()
+
+        if (isFinishing) {
+            presenter.unsubscribe()
+            Application.uiComponentsMap.remove(componentId)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        uiComponent = Injector.obtainAppComponent(this) + PresenterModule(this)
+        savedInstanceState?.let {
+            componentId = it.getInt("COMPONENT_ID")
+        }
+
+        uiComponent = Application.uiComponentsMap.getOrPut(componentId, {
+            Injector.obtainAppComponent(this) + PresenterModule()
+        })
+
         uiComponent.inject(this)
 
         super.onCreate(savedInstanceState)
@@ -72,6 +95,8 @@ class UserDetailActivity: BaseActivity(), UserDetailContract.View {
         ButterKnife.bind(this)
 
         recyclerView.adapter = adapter
+
+        presenter.attachView(this)
 
         savedInstanceState?.let {
             user = it.getParcelable(ITEM_EXTRA)

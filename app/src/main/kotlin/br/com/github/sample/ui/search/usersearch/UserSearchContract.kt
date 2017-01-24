@@ -18,5 +18,7 @@ interface UserSearchContract {
 
     interface Presenter: BasePresenter {
         fun onSearch(query: String, nextPage: NextPage? = null)
+        fun attachView(view: UserSearchContract.View)
+        fun detachView()
     }
 }

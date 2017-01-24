@@ -25,7 +25,7 @@ class UserSearchPresenterTest {
     var view: UserSearchContract.View = mock()
     var dataSource: UserDataSource = mock()
 
-    var presenter: UserSearchPresenter = UserSearchPresenter(view, schedulerProvider, dataSource)
+    var presenter: UserSearchPresenter = UserSearchPresenter(schedulerProvider, dataSource)
 
     fun verifyLoading() {
         verify(view).showLoadingIndicator(true)
@@ -37,7 +37,8 @@ class UserSearchPresenterTest {
         dataSource = mock()
         view = mock()
 
-        presenter = UserSearchPresenter(view, schedulerProvider, dataSource)
+        presenter = UserSearchPresenter(schedulerProvider, dataSource)
+        presenter.attachView(view)
     }
 
     @Test

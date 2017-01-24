@@ -9,12 +9,14 @@ import br.com.github.sample.dagger.Injector
 import br.com.github.sample.dagger.modules.ApiModule
 import br.com.github.sample.dagger.modules.AppModule
 import br.com.github.sample.ui.BaseActivity
+import br.com.github.sample.ui.UIComponent
 import com.bumptech.glide.Glide
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
 import io.reactivex.plugins.RxJavaPlugins
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import java.lang.ref.WeakReference
+import java.util.*
 import javax.inject.Inject
 
 open class Application : android.app.Application(), Thread.UncaughtExceptionHandler {
@@ -140,5 +142,10 @@ open class Application : android.app.Application(), Thread.UncaughtExceptionHand
     companion object {
         val TAG = BuildConfig.APPLICATION_ID
         var INSTANCE: Application? = null
+
+        val uiComponentsMap: HashMap<Int, UIComponent> = hashMapOf()
+        var id = 0
+            get() = field++
+            private set
     }
 }

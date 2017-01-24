@@ -13,38 +13,26 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class PresenterModule(private val view: BaseView) {
+class PresenterModule() {
 
     @Provides
     @UIScope
     fun providesUserSearchPresenter(schedulerProvider: SchedulerProviderContract,
                                     userDataSource: UserDataSource): UserSearchContract.Presenter {
-        if (view !is UserSearchContract.View) {
-            throw AssertionError("Wrong view for presenter")
-        }
-
-        return UserSearchPresenter(view, schedulerProvider, userDataSource)
+        return UserSearchPresenter(schedulerProvider, userDataSource)
     }
 
     @Provides
     @UIScope
     fun providesRepositorySearchPresenter(schedulerProvider: SchedulerProviderContract,
                                           repositoryDataSource: RepositoryDataSource): RepositorySearchContract.Presenter {
-        if (view !is RepositorySearchContract.View) {
-            throw AssertionError("Wrong view for presenter")
-        }
-
-        return RepositorySearchPresenter(view, schedulerProvider, repositoryDataSource)
+        return RepositorySearchPresenter(schedulerProvider, repositoryDataSource)
     }
 
     @Provides
     @UIScope
     fun providesUserDetailPresenter(schedulerProvider: SchedulerProviderContract,
                                     repositoryDataSource: UserDataSource): UserDetailContract.Presenter {
-        if (view !is UserDetailContract.View) {
-            throw AssertionError("Wrong view for presenter")
-        }
-
-        return UserDetailPresenter(view, schedulerProvider, repositoryDataSource)
+        return UserDetailPresenter(schedulerProvider, repositoryDataSource)
     }
 }
