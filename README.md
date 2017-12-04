@@ -1,6 +1,6 @@
 ## Exploring Github API using MVP, Kotlin, Dagger, RxJava2, Instrumentation and Unit Tests
 
-[![CircleCI](https://circleci.com/gh/wakim/github-sample/tree/master.svg?style=svg)](https://circleci.com/gh/wakim/github-sample/tree/master)
+[![CircleCI](https://circleci.com/gh/wakim/github-mvp/tree/master.svg?style=svg)](https://circleci.com/gh/wakim/github-sample/tree/master)
 
 ### Dependencies
 
